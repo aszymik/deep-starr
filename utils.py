@@ -29,11 +29,11 @@ def load_fasta_sequences(file_path):
     sequences = [str(record.seq).upper() for record in SeqIO.parse(file_path, "fasta")]
     return sequences
 
-def prepare_input(set_name, batch_size):
+def prepare_input(set_name, batch_size, set_dir="data"):
     """Loads sequences and their enhancer activity, converting sequences to one-hot encoding."""
     
     # Load sequences from FASTA file
-    file_seq = f"Sequences_{set_name}.fa"
+    file_seq = f"{set_dir}/Sequences_{set_name}.fa"
     sequences = load_fasta_sequences(file_seq)
     
     # Convert sequences to one-hot encoding
@@ -44,7 +44,7 @@ def prepare_input(set_name, batch_size):
     X = np.nan_to_num(seq_matrix)
     
     # Load enhancer activity data
-    activity_file = f"Sequences_activity_{set_name}.txt"
+    activity_file = f"{set_dir}/Sequences_activity_{set_name}.txt"
     activity_data = pd.read_table(activity_file)
     
     Y_dev = activity_data.Dev_log2_enrichment.values
