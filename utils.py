@@ -17,12 +17,12 @@ from datasets import DNADataset
 def one_hot_encode_dna(sequences):
     """Converts a list of DNA sequences to a one-hot encoded matrix using sklearn's OneHotEncoder."""
 
-    encoder = OneHotEncoder(categories=[['A', 'C', 'G', 'T']], dtype=np.float32, handle_unknown='ignore')
-    sequences_array = np.array([list(seq) for seq in sequences])  # convert to 2D array
-    one_hot_encoded = encoder.fit_transform(sequences_array).toarray()
-    one_hot_encoded = one_hot_encoded.reshape(len(sequences), -1, 4)
+    categories = np.array(['A', 'C', 'G', 'T'])
+    encoder = OneHotEncoder(sparse_output=False, categories=[categories], handle_unknown='ignore', dtype=np.float32)
+    encoder.fit(categories.reshape(-1, 1))
 
-    return one_hot_encoded
+    one_hot_encoded = np.array([encoder.transform(np.array(list(seq)).reshape(-1, 1)) for seq in sequences])
+    return one_hot_encoded.reshape(len(sequences), 4, -1)
 
 def load_fasta_sequences(file_path):
     """Reads sequences from a FASTA file and returns a list of sequences."""
@@ -154,10 +154,10 @@ def evaluate(pred_dev, pred_hk, Y_dev, Y_hk):
     
     mse_dev = F.mse_loss(pred_dev.squeeze(), Y_dev).item()
     mse_hk = F.mse_loss(pred_hk.squeeze(), Y_hk).item()
-    pcc_dev = pearsonr(Y_dev.cpu().numpy(), pred_dev.cpu().numpy().squeeze())[0]
-    pcc_hk = pearsonr(Y_hk.cpu().numpy(), pred_hk.cpu().numpy().squeeze())[0]
-    scc_dev = spearmanr(Y_dev.cpu().numpy(), pred_dev.cpu().numpy().squeeze())[0]
-    scc_hk = spearmanr(Y_hk.cpu().numpy(), pred_hk.cpu().numpy().squeeze())[0]
+    pcc_dev = pearsonr(Y_dev.cpu().numpy(), pred_dev.cpu().detach().numpy().squeeze())[0]
+    pcc_hk = pearsonr(Y_hk.cpu().numpy(), pred_hk.cpu().detach().numpy().squeeze())[0]
+    scc_dev = spearmanr(Y_dev.cpu().numpy(), pred_dev.cpu().detach().numpy().squeeze())[0]
+    scc_hk = spearmanr(Y_hk.cpu().numpy(), pred_hk.cpu().detach().numpy().squeeze())[0]
 
     return mse_dev, mse_hk, pcc_dev, pcc_hk, scc_dev, scc_hk
 
