@@ -31,7 +31,7 @@ test_loader = prepare_input("Test", PARAMS['batch_size'])
 model = DeepSTARR(PARAMS)
 
 trained_model = train(model, train_loader, val_loader, PARAMS)
-save(trained_model, 'DeepSTARR')
+torch.save(model.state_dict(), 'outputs/DeepSTARR.model')
 
 
 
