@@ -63,7 +63,7 @@ def prepare_input(set_name, batch_size, set_dir="data"):
     return dataloader
 
 
-def train(model, train_loader, val_loader, params, log_file="training_log.csv"):
+def train(model, train_loader, val_loader, params, log_file="outputs/training_log.csv"):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=params['lr'])
@@ -166,7 +166,7 @@ def save(model, model_name):
     """
     Save model weights to file.
     """
-    model_json = model.to_json()
+    model_json = model.to_json()  # doesn't work
     with open('model_' + model_name + '.json', "w") as json_file:
         json_file.write(model_json)
     model.save_weights('model_' + model_name + '.h5')
