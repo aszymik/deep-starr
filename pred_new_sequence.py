@@ -1,11 +1,6 @@
-import sys
 import torch
-import torch.nn as nn
 import pandas as pd
 import numpy as np
-from Bio import SeqIO
-from datasets import DNADataset
-from torch.utils.data import DataLoader
 import argparse
 
 from models import *
@@ -20,21 +15,30 @@ def parse_args(argv):
 
 def load_model(model_path, params):
     model = DeepSTARR(params)
-    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'), weights_only=True))
     model.eval()
     return model
 
-def predict(model, sequences):
+def predict(model, set_name, batch_size=128):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
 
-    seq_matrix = one_hot_encode_dna(sequences)
-    X_tensor = torch.tensor(seq_matrix, dtype=torch.float32).to(device)
+    test_loader = prepare_input(set_name, batch_size)
+    pred_dev_list, pred_hk_list = [], []
 
     with torch.no_grad():
-        pred_dev, pred_hk = model(X_tensor)
+        for batch in test_loader:
+            batch = batch[0].to(device)
+            pred_dev, pred_hk = model(batch)
+            pred_dev_list.append(pred_dev.cpu().numpy())
+            pred_hk_list.append(pred_hk.cpu().numpy())
 
-    return pred_dev.cpu().numpy().squeeze(), pred_hk.cpu().numpy().squeeze()
+    # Concatenate predictions from all batches
+    pred_dev = np.concatenate(pred_dev_list)
+    pred_hk = np.concatenate(pred_hk_list)
+
+    return pred_dev.squeeze(), pred_hk.squeeze()
+
 
 if __name__ == '__main__':
     # args = parse_args(sys.argv[1:])
@@ -48,12 +52,12 @@ if __name__ == '__main__':
     model = load_model('outputs/DeepSTARR.model', PARAMS)
 
     print('Predicting...')
-    pred_dev, pred_hk = predict(model, sequences)
+    pred_dev, pred_hk = predict(model, 'Test')  # ta funkcja do zmiany
 
     # Save predictions
     out_prediction = pd.DataFrame({'Sequence': sequences, 'Predictions_dev': pred_dev, 'Predictions_hk': pred_hk})
     # out_filename = f'{args.seq}_predictions_{args.model}.txt'
-    out_filename = 'outputs/Test_predictions.txt'
+    out_filename = 'outputs/Pred_activity_Test.txt'
     out_prediction.to_csv(out_filename, sep='\t', index=False)
 
     print(f'\nPredictions saved to {out_filename}\n')
