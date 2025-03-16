@@ -44,20 +44,21 @@ if __name__ == '__main__':
     # args = parse_args(sys.argv[1:])
 
     print('Loading sequences...')
+    set_name = 'Test'
     # sequences = load_fasta_sequences(args.seq)
-    sequences = load_fasta_sequences('data/Sequences_Test.fa')
+    sequences = load_fasta_sequences(f'data/Sequences_{set_name}.fa')
 
     print('Loading model...')
     # model = load_model(args.model, PARAMS)
     model = load_model('outputs/DeepSTARR.model', PARAMS)
 
     print('Predicting...')
-    pred_dev, pred_hk = predict(model, 'Test')  # ta funkcja do zmiany
+    pred_dev, pred_hk = predict(model, set_name)  # ta funkcja do zmiany
 
     # Save predictions
     out_prediction = pd.DataFrame({'Sequence': sequences, 'Predictions_dev': pred_dev, 'Predictions_hk': pred_hk})
     # out_filename = f'{args.seq}_predictions_{args.model}.txt'
-    out_filename = 'outputs/Pred_activity_Test.txt'
+    out_filename = f'outputs/Pred_activity_{set_name}.txt'
     out_prediction.to_csv(out_filename, sep='\t', index=False)
 
     print(f'\nPredictions saved to {out_filename}\n')
