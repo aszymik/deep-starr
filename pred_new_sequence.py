@@ -23,7 +23,7 @@ def predict(model, set_name, batch_size=128):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
 
-    test_loader = prepare_input(set_name, batch_size)
+    test_loader = prepare_input(set_name, batch_size, shuffle=False)
     pred_dev_list, pred_hk_list = [], []
 
     with torch.no_grad():

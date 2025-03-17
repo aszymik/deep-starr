@@ -4,6 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from sklearn import metrics
 from io import StringIO
+from scipy.stats import pearsonr
 
 from plot_train_results import adjust_axes
 
@@ -100,13 +101,15 @@ def predicted_vs_observed(true, predicted, title):
     df_pred = pd.read_csv(predicted, sep='\t')
 
     fig, axes = plt.subplots(1,2, figsize=(12, 5))
-    axes[0].hexbin(df_true['Dev_log2_enrichment'], df_pred['Predictions_dev'], bins='log')
-    axes[1].hexbin(df_true['Hk_log2_enrichment'], df_pred['Predictions_hk'], bins='log')
+    axes[0].hexbin(df_true['Dev_log2_enrichment'], df_pred['Predictions_dev'])#, bins='log')
+    axes[1].hexbin(df_true['Hk_log2_enrichment'], df_pred['Predictions_hk'])#, bins='log')
 
     adjust_axes(axes[0])
     adjust_axes(axes[1])
     fig.supxlabel('Observed fold change', fontsize=10)
     axes[0].set_ylabel('Predicted fold change', fontsize=10)
+
+    # pearson_dev = pearsonr(df_true['Dev_log2_enrichment'], df_pred['Predictions_dev'])[0]
 
     pearson_dev = df_true['Dev_log2_enrichment'].corr(df_pred['Predictions_dev'])
     pearson_hk = df_true['Hk_log2_enrichment'].corr(df_pred['Predictions_hk'])

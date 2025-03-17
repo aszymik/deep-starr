@@ -44,7 +44,7 @@ def load_fasta_sequences(file_path):
     sequences = [str(record.seq).upper() for record in SeqIO.parse(file_path, "fasta")]
     return sequences
 
-def prepare_input(set_name, batch_size, set_dir="data"):
+def prepare_input(set_name, batch_size, set_dir="data", shuffle=True):
     """Loads sequences and their enhancer activity, converting sequences to one-hot encoding."""
     
     # Load sequences from FASTA file
@@ -73,7 +73,7 @@ def prepare_input(set_name, batch_size, set_dir="data"):
     print(f"Loaded {set_name} data.")
     
     dataset = DNADataset(X_tensor, Y_dev_tensor, Y_hk_tensor)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
     
     return dataloader
 
