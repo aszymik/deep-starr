@@ -81,7 +81,7 @@ def predicted_vs_observed(true, predicted, title):
     axes[1].set_title(f'Housekeeping (PCC = {pcc_hk:.3f})', fontsize=10)
     plt.show()    
 
-data_set = 'Val'
+data_set = 'Train'
 set_to_title = {
     'Test': 'test',
     'Train': 'training',
@@ -89,7 +89,9 @@ set_to_title = {
 }
 true = f'data/Sequences_activity_{data_set}.txt'
 pred = f'outputs/Pred_activity_{data_set}.txt'
+pred_dropout = f'outputs/Pred_activity_{data_set}_with_dropout.txt'
 
 
 if __name__ == '__main__':
-    predicted_vs_observed(true, pred, f'DeepSTARR predictions on the {set_to_title[data_set]} set')
+    # predicted_vs_observed(true, pred, f'DeepSTARR predictions on the {set_to_title[data_set]} set')
+    predicted_vs_observed(true, pred_dropout, f'DeepSTARR predictions on the {set_to_title[data_set]} set (with dropout)')

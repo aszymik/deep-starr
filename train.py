@@ -9,11 +9,6 @@ from models import *
 from utils import *
 
 
-# debugging:
-# liczenie korelacji
-# dropout
-
-
 def train(model, train_loader, val_loader, params, log_file="outputs/training_log.csv"):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
