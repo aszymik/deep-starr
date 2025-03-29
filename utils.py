@@ -1,12 +1,14 @@
 import torch
 from torch.utils.data import DataLoader
 
+import h5py
 import numpy as np
 import pandas as pd
 from Bio import SeqIO
 from sklearn.preprocessing import OneHotEncoder
 
 from datasets import DNADataset
+from models import *
 
 PARAMS = {
     'batch_size': 128,
@@ -77,12 +79,35 @@ def prepare_input(set_name, batch_size, set_dir="data", shuffle=True):
     
     return dataloader
 
+def load_model(model_path, params):
+    model = DeepSTARR(params)
+    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'), weights_only=True))
+    model.eval()
+    return model
 
-def save(model, model_name):
-    """
-    Save model weights to file.
-    """
-    model_json = model.to_json()  # doesn't work
-    with open('model_' + model_name + '.json', "w") as json_file:
-        json_file.write(model_json)
-    model.save_weights('model_' + model_name + '.h5')
+
+def load_keras_model(weights_path):
+    keras_weights = {}
+    with h5py.File(weights_path, 'r') as f:
+        for layer in f.keys():
+            keras_weights[layer] = {param: np.array(f[layer][param]) for param in f[layer].keys()}
+
+    model = DeepSTARR(PARAMS)
+    with torch.no_grad():
+        model.conv1.weight.copy_(torch.tensor(keras_weights['conv1']['kernel']).permute(2, 1, 0))  # Keras: (H, W, C_out, C_in) → PyTorch: (C_out, C_in, H, W)
+        model.conv1.bias.copy_(torch.tensor(keras_weights['conv1']['bias']))
+
+        model.bn1.weight.copy_(torch.tensor(keras_weights['batch_normalization']['gamma']))
+        model.bn1.bias.copy_(torch.tensor(keras_weights['batch_normalization']['beta']))
+        model.bn1.running_mean.copy_(torch.tensor(keras_weights['batch_normalization']['moving_mean']))
+        model.bn1.running_var.copy_(torch.tensor(keras_weights['batch_normalization']['moving_variance']))
+
+        model.fc1.weight.copy_(torch.tensor(keras_weights['dense']['kernel']).T)
+        model.fc1.bias.copy_(torch.tensor(keras_weights['dense']['bias']))
+
+        model.fc2.weight.copy_(torch.tensor(keras_weights['dense_1']['kernel']).T)
+        model.fc2.bias.copy_(torch.tensor(keras_weights['dense_1']['bias']))
+    
+    return model
+
+

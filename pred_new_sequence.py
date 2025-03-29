@@ -13,12 +13,6 @@ def parse_args(argv):
     parser.add_argument('-m', '--model', required=True, help='Path to the trained PyTorch model')
     return parser.parse_args(argv)
 
-def load_model(model_path, params):
-    model = DeepSTARR(params)
-    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'), weights_only=True))
-    model.eval()
-    return model
-
 def predict(model, set_name, batch_size=128):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
@@ -50,7 +44,8 @@ if __name__ == '__main__':
 
     print('Loading model...')
     # model = load_model(args.model, PARAMS)
-    model = load_model('outputs/DeepSTARR.model', PARAMS)
+    # model = load_model('outputs/DeepSTARR.model', PARAMS)
+    model = load_keras_model('outputs/DeepSTARR.model.h5')
 
     print('Predicting...')
     pred_dev, pred_hk = predict(model, set_name)  # ta funkcja do zmiany
