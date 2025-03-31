@@ -53,7 +53,7 @@ if __name__ == '__main__':
     # Save predictions
     out_prediction = pd.DataFrame({'Sequence': sequences, 'Predictions_dev': pred_dev, 'Predictions_hk': pred_hk})
     # out_filename = f'{args.seq}_predictions_{args.model}.txt'
-    out_filename = f'outputs/Pred_activity_{set_name}.txt'
+    out_filename = f'outputs/Baseline_pred_activity_{set_name}.txt'
     out_prediction.to_csv(out_filename, sep='\t', index=False)
 
     print(f'\nPredictions saved to {out_filename}\n')
