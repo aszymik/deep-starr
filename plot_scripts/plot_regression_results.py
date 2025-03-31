@@ -90,8 +90,9 @@ set_to_title = {
 true = f'data/Sequences_activity_{data_set}.txt'
 pred = f'outputs/Pred_activity_{data_set}.txt'
 pred_dropout = f'outputs/Pred_activity_{data_set}_with_dropout.txt'
-
+pred_baseline = f'outputs/Baseline_pred_activity_{data_set}_with_dropout.txt'
 
 if __name__ == '__main__':
     # predicted_vs_observed(true, pred, f'DeepSTARR predictions on the {set_to_title[data_set]} set')
-    predicted_vs_observed(true, pred_dropout, f'DeepSTARR predictions on the {set_to_title[data_set]} set (with dropout)')
+    # predicted_vs_observed(true, pred_dropout, f'DeepSTARR predictions on the {set_to_title[data_set]} set (with dropout)')
+    predicted_vs_observed(true, pred_baseline, f'DeepSTARR predictions on the {set_to_title[data_set]} set (with dropout)')

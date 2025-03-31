@@ -1,11 +1,13 @@
 import torch
 from torch.utils.data import DataLoader
 
-import h5py
 import numpy as np
 import pandas as pd
 from Bio import SeqIO
 from sklearn.preprocessing import OneHotEncoder
+
+import keras
+import keras.models as models
 
 from datasets import DNADataset
 from models import *
@@ -86,27 +88,61 @@ def load_model(model_path, params):
     return model
 
 
-def load_keras_model(weights_path):
+def load_keras_model(model_config_path, weights_path):
+
+    with open(model_config_path) as file:
+        data = file.read()
+    keras_model = models.model_from_json(data, custom_objects={"Model": keras.Model})
+    keras_model.load_weights(weights_path)
+
     keras_weights = {}
-    with h5py.File(weights_path, 'r') as f:
-        for layer in f.keys():
-            keras_weights[layer] = {param: np.array(f[layer][param]) for param in f[layer].keys()}
+    for layer in keras_model.layers:
+        weights = layer.get_weights()
+        if weights:
+            keras_weights[layer.name] = weights
 
     model = DeepSTARR(PARAMS)
     with torch.no_grad():
-        model.conv1.weight.copy_(torch.tensor(keras_weights['conv1']['kernel']).permute(2, 1, 0))  # Keras: (H, W, C_out, C_in) → PyTorch: (C_out, C_in, H, W)
-        model.conv1.bias.copy_(torch.tensor(keras_weights['conv1']['bias']))
+        # Conv layers
+        for i in range(4):
+            conv_name = 'Conv1D_1st' if i == 0 else f'Conv1D_{i+1}'
+            bn_name = f'batch_normalization_6{i}'
 
-        model.bn1.weight.copy_(torch.tensor(keras_weights['batch_normalization']['gamma']))
-        model.bn1.bias.copy_(torch.tensor(keras_weights['batch_normalization']['beta']))
-        model.bn1.running_mean.copy_(torch.tensor(keras_weights['batch_normalization']['moving_mean']))
-        model.bn1.running_var.copy_(torch.tensor(keras_weights['batch_normalization']['moving_variance']))
+            # Pytorch layers
+            conv_layer = getattr(model, f'conv{i+1}')
+            bn_layer = getattr(model, f'bn{i+1}')
 
-        model.fc1.weight.copy_(torch.tensor(keras_weights['dense']['kernel']).T)
-        model.fc1.bias.copy_(torch.tensor(keras_weights['dense']['bias']))
+            # Load conv and batchnorm parameters
+            conv_layer.weight.copy_(torch.tensor(keras_weights[conv_name][0]).permute(2, 1, 0))  # Keras: (H, W, C_out, C_in), PyTorch: (C_out, C_in, H, W)
+            conv_layer.bias.copy_(torch.tensor(keras_weights[conv_name][1]))
 
-        model.fc2.weight.copy_(torch.tensor(keras_weights['dense_1']['kernel']).T)
-        model.fc2.bias.copy_(torch.tensor(keras_weights['dense_1']['bias']))
+            bn_layer.weight.copy_(torch.tensor(keras_weights[bn_name][0]))
+            bn_layer.bias.copy_(torch.tensor(keras_weights[bn_name][1]))
+            bn_layer.running_mean.copy_(torch.tensor(keras_weights[bn_name][2]))
+            bn_layer.running_var.copy_(torch.tensor(keras_weights[bn_name][3]))
+
+        # Fc layers
+        for i in range(1, 3):
+            bn_name = f'batch_normalization_6{i+3}'
+            
+            # Pytorch layers
+            fc_layer = getattr(model, f'fc{i}')
+            bn_layer = getattr(model, f'bn_fc{i}')
+
+            fc_layer.weight.copy_(torch.tensor(keras_weights[f'Dense_{i}'][0]).T)
+            fc_layer.bias.copy_(torch.tensor(keras_weights[f'Dense_{i}'][1]))
+
+            bn_layer.weight.copy_(torch.tensor(keras_weights[bn_name][0]))
+            bn_layer.bias.copy_(torch.tensor(keras_weights[bn_name][1]))
+            bn_layer.running_mean.copy_(torch.tensor(keras_weights[bn_name][2]))
+            bn_layer.running_var.copy_(torch.tensor(keras_weights[bn_name][3]))
+
+        # Heads
+        model.fc_dev.weight.copy_(torch.tensor(keras_weights['Dense_Dev'][0]).T)
+        model.fc_dev.bias.copy_(torch.tensor(keras_weights['Dense_Dev'][1]))
+
+        model.fc_hk.weight.copy_(torch.tensor(keras_weights['Dense_Hk'][0]).T)
+        model.fc_hk.bias.copy_(torch.tensor(keras_weights['Dense_Hk'][1]))
     
     return model
 
