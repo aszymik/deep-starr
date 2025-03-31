@@ -2,18 +2,23 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import csv
+import torch
+import numpy as np
 
 from scipy.stats import spearmanr, pearsonr
 
 from models import *
 from utils import *
 
-
 def train(model, train_loader, val_loader, params, log_file="outputs/training_log.csv"):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=params['lr'], betas=(0.9, 0.999), eps=1e-7)
     criterion = nn.MSELoss()
+    
+    best_val_loss = float('inf')
+    best_model_state = None
+    epochs_no_improve = 0
     
     with open(log_file, mode='w', newline='') as file:
         writer = csv.writer(file)
@@ -33,7 +38,6 @@ def train(model, train_loader, val_loader, params, log_file="outputs/training_lo
             optimizer.step()
             total_loss += loss.item()
             
-            # Train statistics
             mse_dev_b, mse_hk_b, pcc_dev_b, pcc_hk_b, scc_dev_b, scc_hk_b = evaluate(pred_dev, pred_hk, Y_dev_batch, Y_hk_batch)
             mse_dev_train += mse_dev_b
             mse_hk_train += mse_hk_b
@@ -50,7 +54,6 @@ def train(model, train_loader, val_loader, params, log_file="outputs/training_lo
         scc_dev_train /= len(train_loader)
         scc_hk_train /= len(train_loader)
 
-        # Validation
         model.eval()
         total_val_loss = 0
         mse_dev_val, mse_hk_val, pcc_dev_val, pcc_hk_val, scc_dev_val, scc_hk_val = 0, 0, 0, 0, 0, 0
@@ -87,12 +90,23 @@ def train(model, train_loader, val_loader, params, log_file="outputs/training_lo
         print(f"MSE Dev: {mse_dev_val:.2f}, PCC Dev: {pcc_dev_val:.2f}, SCC Dev: {scc_dev_val:.2f}")
         print(f"MSE Hk: {mse_hk_val:.2f}, PCC Hk: {pcc_hk_val:.2f}, SCC Hk: {scc_hk_val:.2f}")
         
-        # Logging
         with open(log_file, mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([epoch+1, avg_train_loss, mse_dev_train, mse_hk_train, pcc_dev_train, pcc_hk_train, scc_dev_train, scc_hk_train,
                              avg_val_loss, mse_dev_val, mse_hk_val, pcc_dev_val, pcc_hk_val, scc_dev_val, scc_hk_val])
+        
+        if avg_val_loss < best_val_loss:
+            best_val_loss = avg_val_loss
+            best_model_state = model.state_dict()
+            epochs_no_improve = 0
+        else:
+            epochs_no_improve += 1
+            if epochs_no_improve >= params['early_stop']:
+                print("Early stopping triggered.")
+                break
     
+    if best_model_state:
+        model.load_state_dict(best_model_state)
     return model
 
 def evaluate(pred_dev, pred_hk, Y_dev, Y_hk):
@@ -110,11 +124,7 @@ def evaluate(pred_dev, pred_hk, Y_dev, Y_hk):
 if __name__ == '__main__':
     train_loader = prepare_input("Train", PARAMS['batch_size'])
     val_loader = prepare_input("Val", PARAMS['batch_size'])
-
+    
     model = DeepSTARR(PARAMS)
     trained_model = train(model, train_loader, val_loader, PARAMS)
     torch.save(model.state_dict(), 'outputs/DeepSTARR.model')
-
-
-
-
