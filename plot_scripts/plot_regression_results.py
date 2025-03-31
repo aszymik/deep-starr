@@ -58,7 +58,6 @@ def regression_error_plot(prediction_file, title, linear_model=False):
 
 
 def predicted_vs_observed(true, predicted, title):
-
     df_true = pd.read_csv(true, sep='\t')
     df_pred = pd.read_csv(predicted, sep='\t')
 
@@ -81,18 +80,18 @@ def predicted_vs_observed(true, predicted, title):
     axes[1].set_title(f'Housekeeping (PCC = {pcc_hk:.3f})', fontsize=10)
     plt.show()    
 
-data_set = 'Train'
+data_set = 'Val'
 set_to_title = {
     'Test': 'test',
     'Train': 'training',
     'Val': 'validation'
 }
-true = f'data/Sequences_activity_{data_set}.txt'
+true = f'data/deep-starr/Sequences_activity_{data_set}.txt'
 pred = f'outputs/Pred_activity_{data_set}.txt'
 pred_dropout = f'outputs/Pred_activity_{data_set}_with_dropout.txt'
-pred_baseline = f'outputs/Baseline_pred_activity_{data_set}_with_dropout.txt'
+pred_baseline = f'outputs/Baseline_pred_activity_{data_set}.txt'
 
 if __name__ == '__main__':
     # predicted_vs_observed(true, pred, f'DeepSTARR predictions on the {set_to_title[data_set]} set')
     # predicted_vs_observed(true, pred_dropout, f'DeepSTARR predictions on the {set_to_title[data_set]} set (with dropout)')
-    predicted_vs_observed(true, pred_baseline, f'DeepSTARR predictions on the {set_to_title[data_set]} set (with dropout)')
+    predicted_vs_observed(true, pred_baseline, f'DeepSTARR loaded model predictions on the {set_to_title[data_set]}')

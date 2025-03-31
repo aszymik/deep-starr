@@ -10,8 +10,8 @@ from scipy.stats import spearmanr, pearsonr
 from models import *
 from utils import *
 
-def train(model, train_loader, val_loader, params, log_file="outputs/training_log.csv"):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+def train(model, train_loader, val_loader, params, log_file='outputs/training_log.csv'):
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=params['lr'], betas=(0.9, 0.999), eps=1e-7)
     criterion = nn.MSELoss()
@@ -22,7 +22,7 @@ def train(model, train_loader, val_loader, params, log_file="outputs/training_lo
     
     with open(log_file, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(["Epoch", "Train Loss", "Train MSE Dev", "Train MSE Hk", "Train PCC Dev", "Train PCC Hk", "Train SCC Dev", "Train SCC Hk", "Val Loss", "Val MSE Dev", "Val MSE Hk", "Val PCC Dev", "Val PCC Hk", "Val SCC Dev", "Val SCC Hk"])
+        writer.writerow(['Epoch', 'Train Loss', 'Train MSE Dev', 'Train MSE Hk', 'Train PCC Dev', 'Train PCC Hk', 'Train SCC Dev', 'Train SCC Hk', 'Val Loss', 'Val MSE Dev', 'Val MSE Hk', 'Val PCC Dev', 'Val PCC Hk', 'Val SCC Dev', 'Val SCC Hk'])
     
     for epoch in range(params['epochs']):
         model.train()
@@ -82,13 +82,13 @@ def train(model, train_loader, val_loader, params, log_file="outputs/training_lo
         scc_hk_val /= len(val_loader)
         
         print(f"Epoch {epoch+1}/{params['epochs']}")
-        print(f"Train loss: {avg_train_loss:.4f}, Val loss: {avg_val_loss:.4f}")
-        print("Train stats:")
-        print(f"MSE Dev: {mse_dev_train:.2f}, PCC Dev: {pcc_dev_train:.2f}, SCC Dev: {scc_dev_train:.2f}")
-        print(f"MSE Hk: {mse_hk_train:.2f}, PCC Hk: {pcc_hk_train:.2f}, SCC Hk: {scc_hk_train:.2f}")
-        print("Validation stats:")
-        print(f"MSE Dev: {mse_dev_val:.2f}, PCC Dev: {pcc_dev_val:.2f}, SCC Dev: {scc_dev_val:.2f}")
-        print(f"MSE Hk: {mse_hk_val:.2f}, PCC Hk: {pcc_hk_val:.2f}, SCC Hk: {scc_hk_val:.2f}")
+        print(f'Train loss: {avg_train_loss:.4f}, Val loss: {avg_val_loss:.4f}')
+        print('Train stats:')
+        print(f'MSE Dev: {mse_dev_train:.2f}, PCC Dev: {pcc_dev_train:.2f}, SCC Dev: {scc_dev_train:.2f}')
+        print(f'MSE Hk: {mse_hk_train:.2f}, PCC Hk: {pcc_hk_train:.2f}, SCC Hk: {scc_hk_train:.2f}')
+        print('Validation stats:')
+        print(f'MSE Dev: {mse_dev_val:.2f}, PCC Dev: {pcc_dev_val:.2f}, SCC Dev: {scc_dev_val:.2f}')
+        print(f'MSE Hk: {mse_hk_val:.2f}, PCC Hk: {pcc_hk_val:.2f}, SCC Hk: {scc_hk_val:.2f}')
         
         with open(log_file, mode='a', newline='') as file:
             writer = csv.writer(file)
@@ -102,7 +102,7 @@ def train(model, train_loader, val_loader, params, log_file="outputs/training_lo
         else:
             epochs_no_improve += 1
             if epochs_no_improve >= params['early_stop']:
-                print("Early stopping triggered.")
+                print('Early stopping triggered.')
                 break
     
     if best_model_state:
@@ -122,9 +122,9 @@ def evaluate(pred_dev, pred_hk, Y_dev, Y_hk):
 
 
 if __name__ == '__main__':
-    train_loader = prepare_input("Train", PARAMS['batch_size'])
-    val_loader = prepare_input("Val", PARAMS['batch_size'])
+    train_loader = prepare_input('Train', PARAMS['batch_size'])
+    val_loader = prepare_input('Val', PARAMS['batch_size'])
     
     model = DeepSTARR(PARAMS)
     trained_model = train(model, train_loader, val_loader, PARAMS)
-    torch.save(model.state_dict(), 'outputs/DeepSTARR.model')
+    torch.save(model.state_dict(), 'outputs/DeepSTARR_different_adam.model')
