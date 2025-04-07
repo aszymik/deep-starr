@@ -87,7 +87,63 @@ def load_model(model_path, params):
     model.eval()
     return model
 
+def load_keras_model(model_config_path, weights_path):
+    # Load Keras architecture
+    with open(model_config_path) as file:
+        data = file.read()
+    keras_model = models.model_from_json(data, custom_objects={'Model': keras.Model})
 
+    # Load Keras weights
+    keras_model.load_weights(weights_path)
+
+    # Extract weights
+    keras_weights = {}
+    for layer in keras_model.layers:
+        weights = layer.get_weights()
+        if weights:
+            keras_weights[layer.name] = weights
+
+    model = DeepSTARR(PARAMS)
+    state_dict = {}
+
+    with torch.no_grad():
+        # Conv layers
+        for i in range(4):
+            conv_name = 'Conv1D_1st' if i == 0 else f'Conv1D_{i+1}'
+            bn_name = f'batch_normalization_6{i}'
+
+            # Convert weights
+            state_dict[f'conv{i+1}.weight'] = torch.tensor(keras_weights[conv_name][0]).permute(2, 1, 0)
+            state_dict[f'conv{i+1}.bias'] = torch.tensor(keras_weights[conv_name][1])
+
+            state_dict[f'bn{i+1}.weight'] = torch.tensor(keras_weights[bn_name][0])
+            state_dict[f'bn{i+1}.bias'] = torch.tensor(keras_weights[bn_name][1])
+            state_dict[f'bn{i+1}.running_mean'] = torch.tensor(keras_weights[bn_name][2])
+            state_dict[f'bn{i+1}.running_var'] = torch.tensor(keras_weights[bn_name][3])
+
+        # Fully Connected (Dense) layers
+        for i in range(1, 3):
+            bn_name = f'batch_normalization_6{i+3}'
+
+            state_dict[f'fc{i}.weight'] = torch.tensor(keras_weights[f'Dense_{i}'][0]).T
+            state_dict[f'fc{i}.bias'] = torch.tensor(keras_weights[f'Dense_{i}'][1])
+
+            state_dict[f'bn_fc{i}.weight'] = torch.tensor(keras_weights[bn_name][0])
+            state_dict[f'bn_fc{i}.bias'] = torch.tensor(keras_weights[bn_name][1])
+            state_dict[f'bn_fc{i}.running_mean'] = torch.tensor(keras_weights[bn_name][2])
+            state_dict[f'bn_fc{i}.running_var'] = torch.tensor(keras_weights[bn_name][3])
+
+        # Heads
+        state_dict['fc_dev.weight'] = torch.tensor(keras_weights['Dense_Dev'][0]).T
+        state_dict['fc_dev.bias'] = torch.tensor(keras_weights['Dense_Dev'][1])
+
+        state_dict['fc_hk.weight'] = torch.tensor(keras_weights['Dense_Hk'][0]).T
+        state_dict['fc_hk.bias'] = torch.tensor(keras_weights['Dense_Hk'][1])
+
+    model.load_state_dict(state_dict)
+    return model
+
+"""
 def load_keras_model(model_config_path, weights_path):
 
     with open(model_config_path) as file:
@@ -145,5 +201,5 @@ def load_keras_model(model_config_path, weights_path):
         model.fc_hk.bias.copy_(torch.tensor(keras_weights['Dense_Hk'][1]))
     
     return model
-
-
+"""
+load_keras_model('outputs/DeepSTARR.model.json', 'outputs/DeepSTARR.model.h5')
