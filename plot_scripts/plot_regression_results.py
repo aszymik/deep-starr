@@ -90,8 +90,10 @@ true = f'data/deep-starr/Sequences_activity_{data_set}.txt'
 pred = f'outputs/Pred_activity_{data_set}.txt'
 pred_dropout = f'outputs/Pred_activity_{data_set}_with_dropout.txt'
 pred_baseline = f'outputs/Baseline_pred_activity_{data_set}.txt'
+pred_new_adam = f'outputs/Pred_act_new_adam_{data_set}.txt'
 
 if __name__ == '__main__':
     # predicted_vs_observed(true, pred, f'DeepSTARR predictions on the {set_to_title[data_set]} set')
     # predicted_vs_observed(true, pred_dropout, f'DeepSTARR predictions on the {set_to_title[data_set]} set (with dropout)')
-    predicted_vs_observed(true, pred_baseline, f'DeepSTARR loaded model predictions on the {set_to_title[data_set]}')
+    # predicted_vs_observed(true, pred_baseline, f'DeepSTARR loaded model predictions on the {set_to_title[data_set]} set')
+    predicted_vs_observed(true, pred_new_adam, f'DeepSTARR predictions on the {set_to_title[data_set]} set (different optimizer)')

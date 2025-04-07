@@ -88,6 +88,6 @@ def plot_pcc_and_scc(path, title):
 
 
 if __name__ == '__main__':
-    RES = 'outputs/training_log.csv'
+    RES = 'outputs/training_log2.csv'
     plot_loss(RES, 'Training DeepSTARR on Drosophila melanogaster S2 cells enhancers')
     plot_pcc_and_scc(RES, 'Training DeepSTARR on Drosophila melanogaster S2 cells enhancers')
