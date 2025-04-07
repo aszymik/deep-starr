@@ -10,7 +10,7 @@ from scipy.stats import spearmanr, pearsonr
 from models import *
 from utils import *
 
-def train(model, train_loader, val_loader, params, log_file='outputs/training_log.csv'):
+def train(model, train_loader, val_loader, params, log_file='train_logs/training_log.csv'):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=params['lr'], betas=(0.9, 0.999), eps=1e-7)
@@ -122,9 +122,11 @@ def evaluate(pred_dev, pred_hk, Y_dev, Y_hk):
 
 
 if __name__ == '__main__':
+    LOG_FILE = 'train_logs/training_log2.csv'
+
     train_loader = prepare_input('Train', PARAMS['batch_size'])
     val_loader = prepare_input('Val', PARAMS['batch_size'])
     
     model = DeepSTARR(PARAMS)
-    trained_model = train(model, train_loader, val_loader, PARAMS)
-    torch.save(model.state_dict(), 'outputs/DeepSTARR_different_adam.model')
+    trained_model = train(model, train_loader, val_loader, PARAMS, LOG_FILE)
+    torch.save(model.state_dict(), 'models/DeepSTARR_different_adam.model')
