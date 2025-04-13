@@ -45,25 +45,25 @@ def one_hot_encode_dna(sequences):
 
 def load_fasta_sequences(file_path):
     """Reads sequences from a FASTA file and returns a list of sequences."""
-    sequences = [str(record.seq).upper() for record in SeqIO.parse(file_path, "fasta")]
+    sequences = [str(record.seq).upper() for record in SeqIO.parse(file_path, 'fasta')]
     return sequences
 
-def prepare_input(set_name, batch_size, set_dir="data", shuffle=True):
+def prepare_input(set_name, batch_size, set_dir='data', shuffle=True):
     """Loads sequences and their enhancer activity, converting sequences to one-hot encoding."""
     
     # Load sequences from FASTA file
-    file_seq = f"{set_dir}/Sequences_{set_name}.fa"
+    file_seq = f'{set_dir}/Sequences_{set_name}.fa'
     sequences = load_fasta_sequences(file_seq)
     
     # Convert sequences to one-hot encoding
     seq_matrix = one_hot_encode_dna(sequences)
-    print(f"{set_name} Sequence Matrix Shape: {seq_matrix.shape}")
+    print(f'{set_name} Sequence Matrix Shape: {seq_matrix.shape}')
     
     # Replace NaN values and reshape for model input
     X = np.nan_to_num(seq_matrix)
     
     # Load enhancer activity data
-    activity_file = f"{set_dir}/Sequences_activity_{set_name}.txt"
+    activity_file = f'{set_dir}/Sequences_activity_{set_name}.txt'
     activity_data = pd.read_table(activity_file)
     
     Y_dev = activity_data.Dev_log2_enrichment.values
@@ -74,7 +74,7 @@ def prepare_input(set_name, batch_size, set_dir="data", shuffle=True):
     Y_dev_tensor = torch.tensor(Y_dev, dtype=torch.float32)
     Y_hk_tensor = torch.tensor(Y_hk, dtype=torch.float32)
     
-    print(f"Loaded {set_name} data.")
+    print(f'Loaded {set_name} data.')
     
     dataset = DNADataset(X_tensor, Y_dev_tensor, Y_hk_tensor)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
@@ -148,7 +148,7 @@ def load_keras_model(model_config_path, weights_path):
 
     with open(model_config_path) as file:
         data = file.read()
-    keras_model = models.model_from_json(data, custom_objects={"Model": keras.Model})
+    keras_model = models.model_from_json(data, custom_objects={'Model': keras.Model})
     keras_model.load_weights(weights_path)
 
     keras_weights = {}

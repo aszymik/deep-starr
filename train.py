@@ -10,7 +10,7 @@ from scipy.stats import spearmanr, pearsonr
 from models import *
 from utils import *
 
-def train(model, train_loader, val_loader, params, log_file='train_logs/training_log.csv'):
+def train(model, train_loader, val_loader, params, log_file='train_logs/training_log.csv', seed=1234):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=params['lr'], betas=(0.9, 0.999), eps=1e-7)
@@ -24,6 +24,10 @@ def train(model, train_loader, val_loader, params, log_file='train_logs/training
         writer = csv.writer(file)
         writer.writerow(['Epoch', 'Train Loss', 'Train MSE Dev', 'Train MSE Hk', 'Train PCC Dev', 'Train PCC Hk', 'Train SCC Dev', 'Train SCC Hk', 'Val Loss', 'Val MSE Dev', 'Val MSE Hk', 'Val PCC Dev', 'Val PCC Hk', 'Val SCC Dev', 'Val SCC Hk'])
     
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+
     for epoch in range(params['epochs']):
         model.train()
         total_loss = 0
@@ -122,11 +126,13 @@ def evaluate(pred_dev, pred_hk, Y_dev, Y_hk):
 
 
 if __name__ == '__main__':
-    LOG_FILE = 'train_logs/training_log2.csv'
+    seeds = [1234, 2787, 123, 72, 4895, 2137, 18, 4253, 9731]
 
     train_loader = prepare_input('Train', PARAMS['batch_size'])
     val_loader = prepare_input('Val', PARAMS['batch_size'])
     
     model = DeepSTARR(PARAMS)
-    trained_model = train(model, train_loader, val_loader, PARAMS, LOG_FILE)
-    torch.save(model.state_dict(), 'models/DeepSTARR_different_adam.model')
+    for seed in seeds:
+        log_file = f'train_logs/training_log_{seed}.csv'
+        trained_model = train(model, train_loader, val_loader, PARAMS, log_file, seed)
+        torch.save(model.state_dict(), 'models/DeepSTARR_different_adam.model')

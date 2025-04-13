@@ -1,10 +1,11 @@
-# from keras.layers.convolutional import Conv1D, MaxPooling1D
-# from keras.layers.core import Dropout, Reshape, Dense, Activation, Flatten
-# from keras.layers import BatchNormalization, InputLayer, Input
-# from keras.models import Sequential
-# from keras.optimizers import Adam
-# from keras.callbacks import EarlyStopping, History
+from keras.layers.convolutional import Conv1D, MaxPooling1D
+from keras.layers.core import Dropout, Reshape, Dense, Activation, Flatten
+from keras.layers import BatchNormalization, InputLayer, Input
+from keras.models import Sequential
+from keras.optimizers import Adam
+from keras.callbacks import EarlyStopping, History
 
+import keras
 from helper import IOHelper, SequenceHelper
 
 MODEL_ID = 'models/DeepSTARR.model'
@@ -29,7 +30,7 @@ def load_model(model_path):
     from keras.models import model_from_json
     keras_model_weights = model_path + '.h5'
     keras_model_json = model_path + '.json'
-    keras_model = model_from_json(open(keras_model_json).read())
+    keras_model = model_from_json(open(keras_model_json).read(), custom_objects={'Model': keras.Model})
     keras_model.load_weights(keras_model_weights)
     #keras_model.summary()
     return keras_model, keras_model_weights, keras_model_json
