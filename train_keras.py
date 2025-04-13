@@ -1,3 +1,5 @@
+import tensorflow as tf
+
 import keras
 import keras.layers as kl
 from keras.layers.convolutional import Conv1D, MaxPooling1D
@@ -11,8 +13,6 @@ from keras.callbacks import EarlyStopping, History, ModelCheckpoint
 import pandas as pd
 import numpy as np
 
-import sys
-sys.path.append('Neural_Network_DNA_Demo/')
 from helper import IOHelper, SequenceHelper # from https://github.com/const-ae/Neural_Network_DNA_Demo
 
 import random
