@@ -8,10 +8,11 @@ from keras.callbacks import EarlyStopping, History
 import keras
 from helper import IOHelper, SequenceHelper
 
-MODEL_ID = 'models/DeepSTARR.model'
+# MODEL_ID = 'models/DeepSTARR.model'
+MODEL_ID = 'models/Model_DeepSTARR'
 SET = 'Test'
 set_path = f'data/Sequences_{SET}.fa'
-out_path = f'outputs/Keras_predictions_{SET}.txt'
+out_path = f'outputs/Keras_predictions_{SET}_2.txt'
 
 # Load sequences
 print("\nLoading sequences ...\n")
@@ -30,7 +31,7 @@ def load_model(model_path):
     from keras.models import model_from_json
     keras_model_weights = model_path + '.h5'
     keras_model_json = model_path + '.json'
-    keras_model = model_from_json(open(keras_model_json).read(), custom_objects={'Model': keras.Model})
+    keras_model = model_from_json(open(keras_model_json).read())#, custom_objects={'Model': keras.Model})
     keras_model.load_weights(keras_model_weights)
     #keras_model.summary()
     return keras_model, keras_model_weights, keras_model_json

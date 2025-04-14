@@ -47,6 +47,7 @@ if __name__ == '__main__':
     # model = load_model('models/DeepSTARR.model', PARAMS)
     model = load_model('models/DeepSTARR_different_adam.model', PARAMS)
     # model = load_keras_model('models/DeepSTARR.model.json', 'outputs/DeepSTARR.model.h5')
+    model = load_keras_model('models/Model_DeepSTARR.json', 'models/Model_DeepSTARR.h5')
 
     print('Predicting...')
     pred_dev, pred_hk = predict(model, set_name)  # ta funkcja do zmiany
@@ -55,7 +56,8 @@ if __name__ == '__main__':
     out_prediction = pd.DataFrame({'Sequence': sequences, 'Predictions_dev': pred_dev, 'Predictions_hk': pred_hk})
     # out_filename = f'{args.seq}_predictions_{args.model}.txt'
     # out_filename = f'outputs/Baseline_pred_activity_{set_name}_2.txt'
-    out_filename = f'outputs/Pred_act_new_adam_{set_name}.txt'
+    # out_filename = f'outputs/Pred_act_new_adam_{set_name}.txt'
+    out_filename = f'outputs/Pred_torch_from_keras_{set_name}.txt'
     out_prediction.to_csv(out_filename, sep='\t', index=False)
 
     print(f'\nPredictions saved to {out_filename}\n')
