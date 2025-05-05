@@ -96,7 +96,7 @@ def load_model(model_path, params):
     model.eval()
     return model
 
-def smart_load_keras_weights(h5_path):
+def load_keras_weights(h5_path):
     keras_weights = {}
     
     with h5py.File(h5_path, 'r') as model_weights:
@@ -118,8 +118,8 @@ def smart_load_keras_weights(h5_path):
     
     return keras_weights
 
-def smart_load_keras_model(weights_path):
-    keras_weights = smart_load_keras_weights(weights_path)
+def load_keras_model(weights_path):
+    keras_weights = load_keras_weights(weights_path)
 
     model = DeepSTARR(PARAMS)
     state_dict = {}

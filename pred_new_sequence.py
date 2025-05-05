@@ -48,7 +48,7 @@ if __name__ == '__main__':
     # model = load_model('models/DeepSTARR.model', PARAMS)
     # model = load_model('models/DeepSTARR_different_adam.model', PARAMS)
    
-    model = smart_load_keras_model('models/Model_DeepSTARR.h5')
+    model = load_keras_model('models/Model_DeepSTARR.h5')
     # model = load_model('models/DeepSTARR_1234.model', PARAMS)
 
     print('Predicting...')

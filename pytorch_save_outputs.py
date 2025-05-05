@@ -6,7 +6,7 @@ import sys
 import json
 from utils import *
 
-model = smart_load_keras_model('models/Model_DeepSTARR.h5')
+model = load_keras_model('models/Model_DeepSTARR.h5')
 print(model)
 model.eval()
 
