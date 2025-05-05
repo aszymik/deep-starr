@@ -121,7 +121,7 @@ def load_keras_weights(h5_path):
 def load_keras_model(weights_path):
     keras_weights = load_keras_weights(weights_path)
 
-    model = DeepSTARR(PARAMS)
+    model = DeepSTARR(PARAMS, permute_before_flatten=True)
     state_dict = {}
 
     with torch.no_grad():

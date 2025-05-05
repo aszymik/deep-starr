@@ -3,7 +3,7 @@ import torch.nn.functional as F
 
 
 class DeepSTARR(nn.Module):
-    def __init__(self, params):
+    def __init__(self, params, permute_before_flatten=False):
         super(DeepSTARR, self).__init__()
         
         self.conv1 = nn.Conv1d(in_channels=4, out_channels=params['num_filters'],
@@ -35,6 +35,7 @@ class DeepSTARR(nn.Module):
         self.fc_hk = nn.Linear(params['dense_neurons2'], 1)
         
         self.dropout = nn.Dropout(params['dropout_prob'])
+        self.permute_before_flatten = permute_before_flatten
     
     def forward(self, x):
         x = self.pool(F.relu(self.bn1(self.conv1(x))))
@@ -42,8 +43,8 @@ class DeepSTARR(nn.Module):
         x = self.pool(F.relu(self.bn3(self.conv3(x))))
         x = self.pool(F.relu(self.bn4(self.conv4(x))))
         
-        # Flatten the way Keras does
-        x = x.permute(0, 2, 1)
+        if self.permute_before_flatten:
+            x = x.permute(0, 2, 1)  # flatten the way Keras does
         x = x.reshape(x.shape[0], -1)
 
         x = self.dropout(F.relu(self.bn_fc1(self.fc1(x))))
