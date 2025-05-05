@@ -92,11 +92,15 @@ pred = f'outputs/Pred_activity_{data_set}.txt'
 pred_dropout = f'outputs/Pred_activity_{data_set}_with_dropout.txt'
 pred_baseline = f'outputs/Baseline_pred_activity_{data_set}.txt'
 pred_new_adam = f'outputs/Pred_act_new_adam_{data_set}.txt'
-pred_keras = f'outputs/Keras_predictions_{data_set}.txt'
+pred_keras = f'outputs/Keras_predictions_{data_set}_2.txt'
+pred_torch_from_keras = f'outputs/Pred_torch_from_keras_{data_set}.txt'
+pred_new_torch = f'outputs/Pred_new_trained_torch_{data_set}.txt'
 
 if __name__ == '__main__':
     # predicted_vs_observed(true, pred, f'DeepSTARR predictions on the {set_to_title[data_set]} set')
     # predicted_vs_observed(true, pred_dropout, f'DeepSTARR predictions on the {set_to_title[data_set]} set (with dropout)')
     # predicted_vs_observed(true, pred_baseline, f'DeepSTARR loaded model predictions on the {set_to_title[data_set]} set')
     # predicted_vs_observed(true, pred_new_adam, f'DeepSTARR predictions on the {set_to_title[data_set]} set (different optimizer)')
-    predicted_vs_observed(true, pred_keras, f'Keras DeepSTARR model predictions on the {set_to_title[data_set]} set')
+    # predicted_vs_observed(true, pred_keras, f'Keras DeepSTARR model predictions on the {set_to_title[data_set]} set')
+    predicted_vs_observed(true, pred_torch_from_keras, f'DeepSTARR loaded model predictions on the {set_to_title[data_set]} set')
+    # predicted_vs_observed(true, pred_new_torch, f'DeepSTARR PyTorch model predictions on the {set_to_title[data_set]} set')
