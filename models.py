@@ -42,7 +42,7 @@ class DeepSTARR(nn.Module):
         x = self.pool(F.relu(self.bn3(self.conv3(x))))
         x = self.pool(F.relu(self.bn4(self.conv4(x))))
         
-        # Flatten in the way Keras does
+        # Flatten the way Keras does
         x = x.permute(0, 2, 1)
         x = x.reshape(x.shape[0], -1)
 
