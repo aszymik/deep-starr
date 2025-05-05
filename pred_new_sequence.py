@@ -38,16 +38,18 @@ if __name__ == '__main__':
     # args = parse_args(sys.argv[1:])
 
     print('Loading sequences...')
-    set_name = 'Val'
+    set_name = 'Test'
     # sequences = load_fasta_sequences(args.seq)
     sequences = load_fasta_sequences(f'data/Sequences_{set_name}.fa')
 
     print('Loading model...')
     # model = load_model(args.model, PARAMS)
     # model = load_model('models/DeepSTARR.model', PARAMS)
-    model = load_model('models/DeepSTARR_different_adam.model', PARAMS)
+    # model = load_model('models/DeepSTARR_different_adam.model', PARAMS)
     # model = load_keras_model('models/DeepSTARR.model.json', 'outputs/DeepSTARR.model.h5')
-    model = load_keras_model('models/Model_DeepSTARR.json', 'models/Model_DeepSTARR.h5')
+    
+    # model = load_keras_model('models/Model_DeepSTARR.json', 'models/Model_DeepSTARR.h5')
+    model = smart_load_keras_model('models/Model_DeepSTARR.h5')
 
     print('Predicting...')
     pred_dev, pred_hk = predict(model, set_name)  # ta funkcja do zmiany

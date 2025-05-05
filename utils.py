@@ -6,11 +6,12 @@ import pandas as pd
 from Bio import SeqIO
 from sklearn.preprocessing import OneHotEncoder
 
-import keras
-import keras.models as models
-
 from datasets import DNADataset
 from models import *
+
+import h5py
+import numpy as np
+
 
 PARAMS = {
     'batch_size': 128,
@@ -37,7 +38,10 @@ def one_hot_encode_dna(sequences):
     """Converts a list of DNA sequences to a one-hot encoded matrix using sklearn's OneHotEncoder."""
 
     categories = np.array(['A', 'C', 'G', 'T'])
-    encoder = OneHotEncoder(sparse_output=False, categories=[categories], handle_unknown='ignore', dtype=np.float32)
+    try:
+        encoder = OneHotEncoder(sparse_output=False, categories=[categories], handle_unknown='ignore', dtype=np.float32)
+    except TypeError:
+        encoder = OneHotEncoder(sparse=False, categories=[categories], handle_unknown='ignore', dtype=np.float32)
     encoder.fit(categories.reshape(-1, 1))
 
     one_hot_encoded = np.array([encoder.transform(np.array(list(seq)).reshape(-1, 1)) for seq in sequences])
@@ -87,21 +91,31 @@ def load_model(model_path, params):
     model.eval()
     return model
 
-def load_keras_model(model_config_path, weights_path):
-    # Load Keras architecture
-    with open(model_config_path) as file:
-        data = file.read()
-    keras_model = models.model_from_json(data, custom_objects={'Model': keras.Model})
-
-    # Load Keras weights
-    keras_model.load_weights(weights_path)
-
-    # Extract weights
+def smart_load_keras_weights(h5_path):
     keras_weights = {}
-    for layer in keras_model.layers:
-        weights = layer.get_weights()
-        if weights:
-            keras_weights[layer.name] = weights
+    
+    with h5py.File(h5_path, 'r') as model_weights:
+        
+        for layer_name in model_weights:
+            layer_group = model_weights[layer_name]
+            try:
+                sub_group = layer_group[layer_name]  # Usually repeated name
+            except KeyError:
+                sub_group = layer_group
+            
+            weights = {}
+            for weight_name in sub_group:
+                data = sub_group[weight_name][()]
+                # Remove the :0 suffix if you like
+                clean_name = weight_name.split(':')[0]
+                weights[clean_name] = data
+            
+            keras_weights[layer_name] = weights
+    
+    return keras_weights
+
+def smart_load_keras_model(weights_path):
+    keras_weights = smart_load_keras_weights(weights_path)
 
     model = DeepSTARR(PARAMS)
     state_dict = {}
@@ -110,96 +124,52 @@ def load_keras_model(model_config_path, weights_path):
         # Conv layers
         for i in range(4):
             conv_name = 'Conv1D_1st' if i == 0 else f'Conv1D_{i+1}'
-            bn_name = f'batch_normalization_6{i}'
+            bn_name = f'batch_normalization_{i+1}'
 
-            # Convert weights
-            state_dict[f'conv{i+1}.weight'] = torch.tensor(keras_weights[conv_name][0]).permute(2, 1, 0)
-            state_dict[f'conv{i+1}.bias'] = torch.tensor(keras_weights[conv_name][1])
+            state_dict[f'conv{i+1}.weight'] = torch.tensor(keras_weights[conv_name]['kernel']).permute(2, 1, 0)
+            state_dict[f'conv{i+1}.bias'] = torch.tensor(keras_weights[conv_name]['bias'])
 
-            state_dict[f'bn{i+1}.weight'] = torch.tensor(keras_weights[bn_name][0])
-            state_dict[f'bn{i+1}.bias'] = torch.tensor(keras_weights[bn_name][1])
-            state_dict[f'bn{i+1}.running_mean'] = torch.tensor(keras_weights[bn_name][2])
-            state_dict[f'bn{i+1}.running_var'] = torch.tensor(keras_weights[bn_name][3])
+            state_dict[f'bn{i+1}.weight'] = torch.tensor(keras_weights[bn_name]['gamma'])
+            state_dict[f'bn{i+1}.bias'] = torch.tensor(keras_weights[bn_name]['beta'])
+            state_dict[f'bn{i+1}.running_mean'] = torch.tensor(keras_weights[bn_name]['moving_mean'])
+            state_dict[f'bn{i+1}.running_var'] = torch.tensor(keras_weights[bn_name]['moving_variance'])
 
-        # Fully Connected (Dense) layers
+        # Fully connected layers
         for i in range(1, 3):
-            bn_name = f'batch_normalization_6{i+3}'
+            bn_name = f'batch_normalization_{i+4}'
 
-            state_dict[f'fc{i}.weight'] = torch.tensor(keras_weights[f'Dense_{i}'][0]).T
-            state_dict[f'fc{i}.bias'] = torch.tensor(keras_weights[f'Dense_{i}'][1])
+            state_dict[f'fc{i}.weight'] = torch.tensor(keras_weights[f'Dense_{i}']['kernel']).T
+            state_dict[f'fc{i}.bias'] = torch.tensor(keras_weights[f'Dense_{i}']['bias'])
 
-            state_dict[f'bn_fc{i}.weight'] = torch.tensor(keras_weights[bn_name][0])
-            state_dict[f'bn_fc{i}.bias'] = torch.tensor(keras_weights[bn_name][1])
-            state_dict[f'bn_fc{i}.running_mean'] = torch.tensor(keras_weights[bn_name][2])
-            state_dict[f'bn_fc{i}.running_var'] = torch.tensor(keras_weights[bn_name][3])
+            state_dict[f'bn_fc{i}.weight'] = torch.tensor(keras_weights[bn_name]['gamma'])
+            state_dict[f'bn_fc{i}.bias'] = torch.tensor(keras_weights[bn_name]['beta'])
+            state_dict[f'bn_fc{i}.running_mean'] = torch.tensor(keras_weights[bn_name]['moving_mean'])
+            state_dict[f'bn_fc{i}.running_var'] = torch.tensor(keras_weights[bn_name]['moving_variance'])
 
         # Heads
-        state_dict['fc_dev.weight'] = torch.tensor(keras_weights['Dense_Dev'][0]).T
-        state_dict['fc_dev.bias'] = torch.tensor(keras_weights['Dense_Dev'][1])
+        state_dict['fc_dev.weight'] = torch.tensor(keras_weights['Dense_Dev']['kernel']).T
+        state_dict['fc_dev.bias'] = torch.tensor(keras_weights['Dense_Dev']['bias'])
 
-        state_dict['fc_hk.weight'] = torch.tensor(keras_weights['Dense_Hk'][0]).T
-        state_dict['fc_hk.bias'] = torch.tensor(keras_weights['Dense_Hk'][1])
+        state_dict['fc_hk.weight'] = torch.tensor(keras_weights['Dense_Hk']['kernel']).T
+        state_dict['fc_hk.bias'] = torch.tensor(keras_weights['Dense_Hk']['bias'])
 
     model.load_state_dict(state_dict)
     return model
 
-"""
-def load_keras_model(model_config_path, weights_path):
-
-    with open(model_config_path) as file:
-        data = file.read()
-    keras_model = models.model_from_json(data, custom_objects={'Model': keras.Model})
-    keras_model.load_weights(weights_path)
-
+def load_keras_weights(weights_path):
     keras_weights = {}
-    for layer in keras_model.layers:
-        weights = layer.get_weights()
-        if weights:
-            keras_weights[layer.name] = weights
+    with h5py.File(weights_path, 'r') as model_weights:
 
-    model = DeepSTARR(PARAMS)
-    with torch.no_grad():
-        # Conv layers
-        for i in range(4):
-            conv_name = 'Conv1D_1st' if i == 0 else f'Conv1D_{i+1}'
-            bn_name = f'batch_normalization_6{i}'
+        for layer_name in model_weights.keys():
+            layer_group = model_weights[layer_name]
 
-            # Pytorch layers
-            conv_layer = getattr(model, f'conv{i+1}')
-            bn_layer = getattr(model, f'bn{i+1}')
+            weights = []
+            for weight_name in layer_group.keys():
+                item = layer_group[weight_name]
 
-            # Load conv and batchnorm parameters
-            conv_layer.weight.copy_(torch.tensor(keras_weights[conv_name][0]).permute(2, 1, 0))  # Keras: (H, W, C_out, C_in), PyTorch: (C_out, C_in, H, W)
-            conv_layer.bias.copy_(torch.tensor(keras_weights[conv_name][1]))
+                for sub_weight_name in item.keys():
+                    weights.append(item[sub_weight_name][()])
+            keras_weights[layer_name] = weights
 
-            bn_layer.weight.copy_(torch.tensor(keras_weights[bn_name][0]))
-            bn_layer.bias.copy_(torch.tensor(keras_weights[bn_name][1]))
-            bn_layer.running_mean.copy_(torch.tensor(keras_weights[bn_name][2]))
-            bn_layer.running_var.copy_(torch.tensor(keras_weights[bn_name][3]))
+    return keras_weights
 
-        # Fc layers
-        for i in range(1, 3):
-            bn_name = f'batch_normalization_6{i+3}'
-            
-            # Pytorch layers
-            fc_layer = getattr(model, f'fc{i}')
-            bn_layer = getattr(model, f'bn_fc{i}')
-
-            fc_layer.weight.copy_(torch.tensor(keras_weights[f'Dense_{i}'][0]).T)
-            fc_layer.bias.copy_(torch.tensor(keras_weights[f'Dense_{i}'][1]))
-
-            bn_layer.weight.copy_(torch.tensor(keras_weights[bn_name][0]))
-            bn_layer.bias.copy_(torch.tensor(keras_weights[bn_name][1]))
-            bn_layer.running_mean.copy_(torch.tensor(keras_weights[bn_name][2]))
-            bn_layer.running_var.copy_(torch.tensor(keras_weights[bn_name][3]))
-
-        # Heads
-        model.fc_dev.weight.copy_(torch.tensor(keras_weights['Dense_Dev'][0]).T)
-        model.fc_dev.bias.copy_(torch.tensor(keras_weights['Dense_Dev'][1]))
-
-        model.fc_hk.weight.copy_(torch.tensor(keras_weights['Dense_Hk'][0]).T)
-        model.fc_hk.bias.copy_(torch.tensor(keras_weights['Dense_Hk'][1]))
-    
-    return model
-"""
-load_keras_model('outputs/DeepSTARR.model.json', 'outputs/DeepSTARR.model.h5')
