@@ -135,5 +135,5 @@ if __name__ == '__main__':
     for seed in seeds:
         log_file = f'train_logs/training_log_{seed}.csv'
         trained_model = train(model, train_loader, val_loader, PARAMS, log_file, seed)
-        torch.save(model.state_dict(), 'models/DeepSTARR_different_adam.model')
+        torch.save(model.state_dict(), f'models/DeepSTARR_{seed}.model')
         

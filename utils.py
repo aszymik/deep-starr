@@ -4,7 +4,6 @@ from torch.utils.data import DataLoader
 import numpy as np
 import pandas as pd
 from Bio import SeqIO
-from sklearn.preprocessing import OneHotEncoder
 
 from datasets import DNADataset
 from models import *
@@ -35,17 +34,23 @@ PARAMS = {
 }
 
 def one_hot_encode_dna(sequences):
-    """Converts a list of DNA sequences to a one-hot encoded matrix using sklearn's OneHotEncoder."""
+    """One-hot encode a list of DNA sequences as a NumPy array of shape (B, 4, L)."""
+    
+    mapping = {
+        'A': [1, 0, 0, 0],
+        'C': [0, 1, 0, 0],
+        'T': [0, 0, 1, 0],
+        'G': [0, 0, 0, 1],
+        'N': [0, 0, 0, 0]
+    }
+    mapping.update({k.lower(): v for k, v in mapping.items()})  # extend to lowercase
 
-    categories = np.array(['A', 'C', 'G', 'T'])
-    try:
-        encoder = OneHotEncoder(sparse_output=False, categories=[categories], handle_unknown='ignore', dtype=np.float32)
-    except TypeError:
-        encoder = OneHotEncoder(sparse=False, categories=[categories], handle_unknown='ignore', dtype=np.float32)
-    encoder.fit(categories.reshape(-1, 1))
+    encoded = np.array([
+        [mapping.get(base, [0, 0, 0, 0]) for base in seq]
+        for seq in sequences
+    ])  # shape: (B, L, 4)
 
-    one_hot_encoded = np.array([encoder.transform(np.array(list(seq)).reshape(-1, 1)) for seq in sequences])
-    return one_hot_encoded.reshape(len(sequences), 4, -1)
+    return encoded.transpose(0, 2, 1)  # (B, 4, L)
 
 def load_fasta_sequences(file_path):
     """Reads sequences from a FASTA file and returns a list of sequences."""
@@ -99,15 +104,14 @@ def smart_load_keras_weights(h5_path):
         for layer_name in model_weights:
             layer_group = model_weights[layer_name]
             try:
-                sub_group = layer_group[layer_name]  # Usually repeated name
+                sub_group = layer_group[layer_name]  # usually repeated name
             except KeyError:
                 sub_group = layer_group
             
             weights = {}
             for weight_name in sub_group:
                 data = sub_group[weight_name][()]
-                # Remove the :0 suffix if you like
-                clean_name = weight_name.split(':')[0]
+                clean_name = weight_name.split(':')[0]  # remove the :0 suffix
                 weights[clean_name] = data
             
             keras_weights[layer_name] = weights

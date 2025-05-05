@@ -16,6 +16,7 @@ def parse_args(argv):
 def predict(model, set_name, batch_size=128):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
+    model.eval()
 
     test_loader = prepare_input(set_name, batch_size, shuffle=False)
     pred_dev_list, pred_hk_list = [], []
@@ -46,10 +47,9 @@ if __name__ == '__main__':
     # model = load_model(args.model, PARAMS)
     # model = load_model('models/DeepSTARR.model', PARAMS)
     # model = load_model('models/DeepSTARR_different_adam.model', PARAMS)
-    # model = load_keras_model('models/DeepSTARR.model.json', 'outputs/DeepSTARR.model.h5')
-    
-    # model = load_keras_model('models/Model_DeepSTARR.json', 'models/Model_DeepSTARR.h5')
+   
     model = smart_load_keras_model('models/Model_DeepSTARR.h5')
+    # model = load_model('models/DeepSTARR_1234.model', PARAMS)
 
     print('Predicting...')
     pred_dev, pred_hk = predict(model, set_name)  # ta funkcja do zmiany
@@ -60,6 +60,7 @@ if __name__ == '__main__':
     # out_filename = f'outputs/Baseline_pred_activity_{set_name}_2.txt'
     # out_filename = f'outputs/Pred_act_new_adam_{set_name}.txt'
     out_filename = f'outputs/Pred_torch_from_keras_{set_name}.txt'
+    # out_filename = f'outputs/Pred_new_trained_torch_{set_name}.txt'
     out_prediction.to_csv(out_filename, sep='\t', index=False)
 
     print(f'\nPredictions saved to {out_filename}\n')
