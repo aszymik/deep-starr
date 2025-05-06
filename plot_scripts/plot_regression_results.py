@@ -57,7 +57,7 @@ def regression_error_plot(prediction_file, title, linear_model=False):
     plt.show() 
 
 
-def predicted_vs_observed(true, predicted, title):
+def predicted_vs_observed(true, predicted, title, save_path=None):
     df_true = pd.read_csv(true, sep='\t')
     df_pred = pd.read_csv(predicted, sep='\t')
 
@@ -78,29 +78,39 @@ def predicted_vs_observed(true, predicted, title):
 
     axes[0].set_title(f'Developmental (PCC = {pcc_dev:.3f})', fontsize=10)
     axes[1].set_title(f'Housekeeping (PCC = {pcc_hk:.3f})', fontsize=10)
-    plt.show()    
 
-data_set = 'Test'
+    if save_path:
+        plt.savefig(save_path)
+    plt.show()
+
+
+set_name = 'Test'
 set_to_title = {
     'Test': 'test',
     'Train': 'training',
     'Val': 'validation'
 }
-true = f'data/deep-starr/Sequences_activity_{data_set}.txt'
-pred = f'outputs/Pred_activity_{data_set}.txt'
+true = f'data/deep-starr/Sequences_activity_{set_name}.txt'
+pred = f'outputs/Pred_activity_{set_name}.txt'
 
-pred_dropout = f'outputs/Pred_activity_{data_set}_with_dropout.txt'
-pred_baseline = f'outputs/Baseline_pred_activity_{data_set}.txt'
-pred_new_adam = f'outputs/Pred_act_new_adam_{data_set}.txt'
-pred_keras = f'outputs/Keras_predictions_{data_set}_2.txt'
-pred_torch_from_keras = f'outputs/Pred_torch_from_keras_{data_set}.txt'
-pred_new_torch = f'outputs/Pred_new_trained_torch_{data_set}.txt'
+pred_dropout = f'outputs/Pred_activity_{set_name}_with_dropout.txt'
+pred_baseline = f'outputs/Baseline_pred_activity_{set_name}.txt'
+pred_new_adam = f'outputs/Pred_act_new_adam_{set_name}.txt'
+pred_keras = f'outputs/Keras_predictions_{set_name}_2.txt'
+pred_torch_from_keras = f'outputs/Pred_torch_from_keras_{set_name}.txt'
+pred_new_torch = f'outputs/Pred_new_trained_torch_{set_name}.txt'
 
 if __name__ == '__main__':
-    # predicted_vs_observed(true, pred, f'DeepSTARR predictions on the {set_to_title[data_set]} set')
-    # predicted_vs_observed(true, pred_dropout, f'DeepSTARR predictions on the {set_to_title[data_set]} set (with dropout)')
-    # predicted_vs_observed(true, pred_baseline, f'DeepSTARR loaded model predictions on the {set_to_title[data_set]} set')
-    # predicted_vs_observed(true, pred_new_adam, f'DeepSTARR predictions on the {set_to_title[data_set]} set (different optimizer)')
-    # predicted_vs_observed(true, pred_keras, f'Keras DeepSTARR model predictions on the {set_to_title[data_set]} set')
-    predicted_vs_observed(true, pred_torch_from_keras, f'DeepSTARR loaded model predictions on the {set_to_title[data_set]} set')
-    # predicted_vs_observed(true, pred_new_torch, f'DeepSTARR PyTorch model predictions on the {set_to_title[data_set]} set')
+    # predicted_vs_observed(true, pred, f'DeepSTARR predictions on the {set_to_title[set_name]} set')
+    # predicted_vs_observed(true, pred_dropout, f'DeepSTARR predictions on the {set_to_title[set_name]} set (with dropout)')
+    # predicted_vs_observed(true, pred_baseline, f'DeepSTARR loaded model predictions on the {set_to_title[set_name]} set')
+    # predicted_vs_observed(true, pred_new_adam, f'DeepSTARR predictions on the {set_to_title[set_name]} set (different optimizer)')
+    # predicted_vs_observed(true, pred_keras, f'Keras DeepSTARR model predictions on the {set_to_title[set_name]} set')
+    # predicted_vs_observed(true, pred_torch_from_keras, f'DeepSTARR loaded model predictions on the {set_to_title[set_name]} set')
+    # predicted_vs_observed(true, pred_new_torch, f'DeepSTARR PyTorch model predictions on the {set_to_title[set_name]} set')
+
+    seeds = [1234, 2787, 123, 72, 4895, 2137, 18, 4253, 9731]
+    for seed in seeds:
+        pred_filename = f'outputs/Pred_new_torch_{seed}_{set_name}.txt'
+        plot_filename = f'plots/05.05_new_torch/model_{seed}.png'
+        predicted_vs_observed(true, pred_filename, f'DeepSTARR PyTorch model predictions on the {set_to_title[set_name]} set', plot_filename)
