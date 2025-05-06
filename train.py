@@ -126,7 +126,8 @@ def evaluate(pred_dev, pred_hk, Y_dev, Y_hk):
 
 
 if __name__ == '__main__':
-    seeds = [1234, 2787, 123, 72, 4895, 2137, 18, 4253, 9731]
+    # seeds = [1234, 2787, 123, 72, 4895, 2137, 18, 4253, 9731]
+    seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
 
     train_loader = prepare_input('Train', PARAMS['batch_size'])
     val_loader = prepare_input('Val', PARAMS['batch_size'])
