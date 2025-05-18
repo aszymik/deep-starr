@@ -90,25 +90,8 @@ set_to_title = {
     'Val': 'validation'
 }
 true = f'data/deep-starr/Sequences_activity_{set_name}.txt'
-pred = f'outputs/Pred_activity_{set_name}.txt'
-
-pred_dropout = f'outputs/Pred_activity_{set_name}_with_dropout.txt'
-pred_baseline = f'outputs/Baseline_pred_activity_{set_name}.txt'
-pred_new_adam = f'outputs/Pred_act_new_adam_{set_name}.txt'
-pred_keras = f'outputs/Keras_predictions_{set_name}_2.txt'
-pred_torch_from_keras = f'outputs/Pred_torch_from_keras_{set_name}.txt'
-pred_new_torch = f'outputs/Pred_new_trained_torch_{set_name}.txt'
 
 if __name__ == '__main__':
-    # predicted_vs_observed(true, pred, f'DeepSTARR predictions on the {set_to_title[set_name]} set')
-    # predicted_vs_observed(true, pred_dropout, f'DeepSTARR predictions on the {set_to_title[set_name]} set (with dropout)')
-    # predicted_vs_observed(true, pred_baseline, f'DeepSTARR loaded model predictions on the {set_to_title[set_name]} set')
-    # predicted_vs_observed(true, pred_new_adam, f'DeepSTARR predictions on the {set_to_title[set_name]} set (different optimizer)')
-    # predicted_vs_observed(true, pred_keras, f'Keras DeepSTARR model predictions on the {set_to_title[set_name]} set')
-    # predicted_vs_observed(true, pred_torch_from_keras, f'DeepSTARR loaded model predictions on the {set_to_title[set_name]} set')
-    # predicted_vs_observed(true, pred_new_torch, f'DeepSTARR PyTorch model predictions on the {set_to_title[set_name]} set')
-
-    # seeds = [1234, 2787, 123, 72, 4895, 2137, 18, 4253, 9731]
     seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
     for seed in seeds:
         pred_filename = f'outputs/Pred_new_torch_{seed}_{set_name}.txt'

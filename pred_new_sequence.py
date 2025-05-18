@@ -43,15 +43,9 @@ if __name__ == '__main__':
     # sequences = load_fasta_sequences(args.seq)
     sequences = load_fasta_sequences(f'data/Sequences_{set_name}.fa')
 
-    print('Loading model...')
-    # model = load_model(args.model, PARAMS)
-    # model = load_model('models/DeepSTARR.model', PARAMS)
-    # model = load_model('models/DeepSTARR_different_adam.model', PARAMS)
-    # model = load_keras_model('models/Model_DeepSTARR.h5')
-
-    # seeds = [1234, 2787, 123, 72, 4895, 2137, 18, 4253, 9731]
     seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
     for seed in seeds:
+        print('Loading model...')
         model = load_model(f'models/DeepSTARR_{seed}.model', PARAMS)
 
         print('Predicting...')
@@ -62,13 +56,3 @@ if __name__ == '__main__':
         out_prediction.to_csv(out_filename, sep='\t', index=False)
         print(f'\nPredictions saved to {out_filename}\n')
 
-    # Save predictions
-    # out_prediction = pd.DataFrame({'Sequence': sequences, 'Predictions_dev': pred_dev, 'Predictions_hk': pred_hk})
-    # out_filename = f'{args.seq}_predictions_{args.model}.txt'
-    # out_filename = f'outputs/Baseline_pred_activity_{set_name}_2.txt'
-    # out_filename = f'outputs/Pred_act_new_adam_{set_name}.txt'
-    # out_filename = f'outputs/Pred_torch_from_keras_{set_name}.txt'
-    # out_filename = f'outputs/Pred_new_trained_torch_{set_name}.txt'
-    # out_prediction.to_csv(out_filename, sep='\t', index=False)
-
-    # print(f'\nPredictions saved to {out_filename}\n')
