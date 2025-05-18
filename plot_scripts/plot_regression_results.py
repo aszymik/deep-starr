@@ -47,7 +47,6 @@ def regression_error_plot(prediction_file, title, linear_model=False):
     axes[0].set_ylabel('Predicted – observed fold change', fontsize=11)
     adjust_axes(axes[0])
 
-    # axes[1].scatter(df['observed'], df['predicted'], marker='.', color='indigo')
     axes[1].hexbin(df['observed'], df['predicted'], bins='log')
     axes[1].set_xlabel('Observed fold change', fontsize=11)
     axes[1].set_ylabel('Predicted fold change', fontsize=11)
@@ -109,7 +108,8 @@ if __name__ == '__main__':
     # predicted_vs_observed(true, pred_torch_from_keras, f'DeepSTARR loaded model predictions on the {set_to_title[set_name]} set')
     # predicted_vs_observed(true, pred_new_torch, f'DeepSTARR PyTorch model predictions on the {set_to_title[set_name]} set')
 
-    seeds = [1234, 2787, 123, 72, 4895, 2137, 18, 4253, 9731]
+    # seeds = [1234, 2787, 123, 72, 4895, 2137, 18, 4253, 9731]
+    seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
     for seed in seeds:
         pred_filename = f'outputs/Pred_new_torch_{seed}_{set_name}.txt'
         plot_filename = f'plots/05.05_new_torch/model_{seed}.png'
