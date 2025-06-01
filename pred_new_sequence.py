@@ -39,22 +39,25 @@ if __name__ == '__main__':
 
     print('Loading sequences...')
     set_name = 'Test'
-    # sequences = load_fasta_sequences(args.seq)
-    sequences = load_fasta_sequences(f'data/lenti-mpra/da_library/preprocessed/Sequences_{set_name}.fa')
+    # sequences = load_fasta_sequences(f'data/lenti-mpra/da_library/preprocessed/Sequences_{set_name}.fa')
+    sequences = load_fasta_sequences(f'data/lenti-mpra/da_library/split_as_in_paper/Sequences_{set_name}.fa')
     seeds = [7898] #, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
     
     for seed in seeds:
         print('Loading model...')
-        model = load_model(f'models/lenti-mpra/DeepSTARR_lenti-mpra_{seed}.model', PARAMS)
+        # model = load_model(f'models/lenti-mpra/DeepSTARR_lenti-mpra_{seed}.model', PARAMS)
+        model = load_model(f'models/lenti-mpra/split_as_in_paper/DeepSTARR_lenti-mpra_{seed}.model', PARAMS)
 
         print('Predicting...')
-        set_dir = 'data/lenti-mpra/da_library/preprocessed'
+        # set_dir = 'data/lenti-mpra/da_library/preprocessed'
+        set_dir = 'data/lenti-mpra/da_library/split_as_in_paper'
         activity_cols = ['Primary_log2_enrichment', 'Organoid_log2_enrichment']
         pred_prim, pred_org = predict(model, set_name, set_dir=set_dir, activity_cols=activity_cols)
 
         out_prediction = pd.DataFrame({'Sequence': sequences, 'Predictions_primary': pred_prim, 'Predictions_organoid': pred_org})
         
-        out_filename = f'outputs/lenti-mpra/Pred_new_torch_{seed}_{set_name}.txt'
+        # out_filename = f'outputs/lenti-mpra/Pred_new_torch_{seed}_{set_name}.txt'
+        out_filename = f'outputs/lenti-mpra/split_as_in_paper/Pred_new_torch_{seed}_{set_name}.txt'
         out_prediction.to_csv(out_filename, sep='\t', index=False)
         print(f'\nPredictions saved to {out_filename}\n')
 
