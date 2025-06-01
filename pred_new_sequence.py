@@ -50,7 +50,8 @@ if __name__ == '__main__':
     # model = load_keras_model('models/Model_DeepSTARR.h5')
 
     # seeds = [1234, 2787, 123, 72, 4895, 2137, 18, 4253, 9731]
-    seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
+    # seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
+    seeds = [7899, 7897, 7796, 7697, 4898, 4896, 1238]#, 1235, 1237, 7654, 9876]
     for seed in seeds:
         model = load_model(f'models/DeepSTARR_{seed}.model', PARAMS)
 
