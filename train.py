@@ -126,16 +126,24 @@ def evaluate(pred_dev, pred_hk, Y_dev, Y_hk):
 
 
 if __name__ == '__main__':
-    # seeds = [1234, 2787, 123, 72, 4895, 2137, 18, 4253, 9731]
-    # seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
-    seeds = [7899, 7897, 7796, 7697, 4898, 4896, 1238, 1235, 1237, 7654, 9876]
+    seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
+    set_dir = 'data/lenti-mpra/da_library/preprocessed',
+    activity_cols = ['Primary_log2_enrichment', 'Organoid_log2_enrichment']
 
-    train_loader = prepare_input('Train', PARAMS['batch_size'])
-    val_loader = prepare_input('Val', PARAMS['batch_size'])
+    train_loader = prepare_input(set_name='Train', 
+                                 batch_size=PARAMS['batch_size'],
+                                 set_dir=set_dir,
+                                 activity_cols=activity_cols
+                                 )
+    val_loader = prepare_input(set_name='Val', 
+                               batch_size=PARAMS['batch_size'],
+                               set_dir=set_dir,
+                               activity_cols=activity_cols
+                               )
     
     model = DeepSTARR(PARAMS)
     for seed in seeds:
-        log_file = f'train_logs/training_log_{seed}.csv'
+        log_file = f'train_logs/lenti-mpra/training_log_{seed}.csv'
         trained_model = train(model, train_loader, val_loader, PARAMS, log_file, seed)
-        torch.save(model.state_dict(), f'models/DeepSTARR_{seed}.model')
+        torch.save(model.state_dict(), f'models/lenti-mpra/DeepSTARR_lenti-mpra_{seed}.model')
         
