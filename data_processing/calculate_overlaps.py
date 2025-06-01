@@ -1,36 +1,20 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import pyranges as pr
 
 def read_bed(file_path):
-    # Read BED file into DataFrame
     df = pd.read_csv(file_path, sep="\t", header=None, usecols=[0, 1, 2],
-                     names=["chr", "start", "end"])
-    return df
+                     names=["Chromosome", "Start", "End"])
+    return pr.PyRanges(df)
 
 def calculate_overlap(bed1, bed2):
-    overlaps = []
-
-    for i, row1 in bed1.iterrows():
-        chr1, start1, end1 = row1["chr"], row1["start"], row1["end"]
-        id1 = f"{chr1}:{start1}-{end1}"
-
-        # Filter for matching chromosome
-        chr_matches = bed2[bed2["chr"] == chr1]
-
-        for j, row2 in chr_matches.iterrows():
-            start2, end2 = row2["start"], row2["end"]
-            id2 = f"{chr1}:{start2}-{end2}"
-
-            # Calculate overlap
-            overlap_start = max(start1, start2)
-            overlap_end = min(end1, end2)
-            overlap = max(0, overlap_end - overlap_start)
-
-            if overlap > 0:
-                overlaps.append((id1, id2, overlap))
-
-    return overlaps
+    overlaps = bed1.join(bed2)
+    df = overlaps.df
+    df["id1"] = df["Chromosome"].astype(str) + ":" + df["Start"].astype(str) + "-" + df["End"].astype(str)
+    df["id2"] = df["Chromosome"].astype(str) + ":" + df["Start_b"].astype(str) + "-" + df["End_b"].astype(str)
+    df["overlap"] = (df[["Start", "Start_b"]].max(axis=1)
+                     .rsub(df[["End", "End_b"]].min(axis=1), axis=0)).clip(lower=0)
+    return df[["id1", "id2", "overlap"]].values.tolist()
 
 def save_results(overlaps, output_tsv):
     df = pd.DataFrame(overlaps, columns=["id1", "id2", "overlap"])
@@ -46,7 +30,6 @@ def plot_histogram(overlaps, output_png=None):
     if output_png:
         plt.savefig(output_png)
     plt.show()
-
 
 def main(bed1_path, bed2_path, output_tsv, output_png=None):
     bed1 = read_bed(bed1_path)
