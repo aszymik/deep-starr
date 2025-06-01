@@ -57,7 +57,7 @@ def load_fasta_sequences(file_path):
     sequences = [str(record.seq).upper() for record in SeqIO.parse(file_path, 'fasta')]
     return sequences
 
-def prepare_input(set_name, batch_size, set_dir='data', shuffle=True):
+def prepare_input(set_name, batch_size, set_dir='data/deep-starr', activity_cols=['Dev_log2_enrichment', 'Hk_log2_enrichment'], shuffle=True):
     """Loads sequences and their enhancer activity, converting sequences to one-hot encoding."""
     
     # Load sequences from FASTA file
@@ -75,17 +75,17 @@ def prepare_input(set_name, batch_size, set_dir='data', shuffle=True):
     activity_file = f'{set_dir}/Sequences_activity_{set_name}.txt'
     activity_data = pd.read_table(activity_file)
     
-    Y_dev = activity_data.Dev_log2_enrichment.values
-    Y_hk = activity_data.Hk_log2_enrichment.values
+    Y_first = activity_data[activity_cols[0]].values
+    Y_second = activity_data[activity_cols[1]].values
     
     # Convert to PyTorch tensors
     X_tensor = torch.tensor(X, dtype=torch.float32)
-    Y_dev_tensor = torch.tensor(Y_dev, dtype=torch.float32)
-    Y_hk_tensor = torch.tensor(Y_hk, dtype=torch.float32)
+    Y_first_tensor = torch.tensor(Y_first, dtype=torch.float32)
+    Y_second_tensor = torch.tensor(Y_second, dtype=torch.float32)
     
     print(f'Loaded {set_name} data.')
     
-    dataset = DNADataset(X_tensor, Y_dev_tensor, Y_hk_tensor)
+    dataset = DNADataset(X_tensor, Y_first_tensor, Y_second_tensor)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
     
     return dataloader
