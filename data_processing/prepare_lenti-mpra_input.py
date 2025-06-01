@@ -6,10 +6,14 @@ org_bed_path = "data/lenti-mpra/da_library/organoids.bed"
 prim_bed_path = "data/lenti-mpra/da_library/primary.bed"
 fasta_path = "data/lenti-mpra/da_library/organoids.fa"
 
-output_prefix = "data/lenti-mpra/da_library/preprocessed/Sequences"
+# output_prefix = "data/lenti-mpra/da_library/preprocessed/Sequences"
+output_prefix = "data/lenti-mpra/da_library/split_as_in_paper/Sequences"
 
-VALID_CHR = ["14", "15", "16", "17"]
-TEST_CHR = ["18", "19", "20", "21", "22"]
+# VALID_CHR = ["14", "15", "16", "17"]
+# TEST_CHR = ["18", "19", "20", "21", "22"]
+
+VALID_CHR = ["3"]
+TEST_CHR = ["4"]
 
 # Load bed files with activity
 def read_bed_with_activity(path):

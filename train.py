@@ -128,7 +128,8 @@ def evaluate(pred_dev, pred_hk, Y_dev, Y_hk):
 
 if __name__ == '__main__':
     seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
-    set_dir = 'data/lenti-mpra/da_library/preprocessed'
+    # set_dir = 'data/lenti-mpra/da_library/preprocessed'
+    set_dir = 'data/lenti-mpra/da_library/split_as_in_paper'
     activity_cols = ['Primary_log2_enrichment', 'Organoid_log2_enrichment']
 
     train_loader = prepare_input(set_name='Train', 
@@ -144,7 +145,9 @@ if __name__ == '__main__':
     
     model = DeepSTARR(PARAMS)
     for seed in seeds:
-        log_file = f'train_logs/lenti-mpra/training_log_{seed}.csv'
+        # log_file = f'train_logs/lenti-mpra/training_log_{seed}.csv'
+        log_file = f'train_logs/lenti-mpra/split_as_in_paper/training_log_{seed}.csv'
         trained_model = train(model, train_loader, val_loader, PARAMS, log_file, seed)
-        torch.save(model.state_dict(), f'models/lenti-mpra/DeepSTARR_lenti-mpra_{seed}.model')
+        # torch.save(model.state_dict(), f'models/lenti-mpra/DeepSTARR_lenti-mpra_{seed}.model')
+        torch.save(model.state_dict(), f'models/lenti-mpra/split_as_in_paper/DeepSTARR_lenti-mpra_{seed}.model')
         
