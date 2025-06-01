@@ -56,27 +56,31 @@ def regression_error_plot(prediction_file, title, linear_model=False):
     plt.show() 
 
 
-def predicted_vs_observed(true, predicted, title, save_path=None):
+def predicted_vs_observed(true, predicted, title, class_names=['dev', 'hk'], save_path=None):
     df_true = pd.read_csv(true, sep='\t')
     df_pred = pd.read_csv(predicted, sep='\t')
 
     fig, axes = plt.subplots(1,2, figsize=(12, 5))
-    axes[0].hexbin(df_true['Dev_log2_enrichment'], df_pred['Predictions_dev'], bins='log')
-    axes[1].hexbin(df_true['Hk_log2_enrichment'], df_pred['Predictions_hk'], bins='log')
+    axes[0].hexbin(df_true[f'{class_names[0].capitalize()}_log2_enrichment'], df_pred[f'Predictions_{class_names[0]}'], bins='log')
+    axes[1].hexbin(df_true[f'{class_names[1].capitalize()}_log2_enrichment'], df_pred[f'Predictions_{class_names[0]}'], bins='log')
 
     adjust_axes(axes[0])
     adjust_axes(axes[1])
     fig.supxlabel('Observed fold change [log2]', fontsize=10)
     axes[0].set_ylabel('Predicted fold change [log2]', fontsize=10)
 
-    pcc_dev = pearsonr(df_true['Dev_log2_enrichment'], df_pred['Predictions_dev'])[0]
-    pcc_hk = pearsonr(df_true['Hk_log2_enrichment'], df_pred['Predictions_hk'])[0]
+    pcc_dev = pearsonr(df_true[f'{class_names[0].capitalize()}_log2_enrichment'], df_pred[f'Predictions_{class_names[0]}'])[0]
+    pcc_hk = pearsonr(df_true[f'{class_names[1].capitalize()}_log2_enrichment'], df_pred[f'Predictions_{class_names[1]}'])[0]
 
     fig.suptitle(title, fontsize=14)
     plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.4, hspace=0.4) 
 
-    axes[0].set_title(f'Developmental (PCC = {pcc_dev:.3f})', fontsize=10)
-    axes[1].set_title(f'Housekeeping (PCC = {pcc_hk:.3f})', fontsize=10)
+    if class_names == ['dev', 'hk']:
+        axes[0].set_title(f'Developmental (PCC = {pcc_dev:.3f})', fontsize=10)
+        axes[1].set_title(f'Housekeeping (PCC = {pcc_hk:.3f})', fontsize=10)
+    else:
+        axes[0].set_title(f'Primary (PCC = {pcc_dev:.3f})', fontsize=10)
+        axes[1].set_title(f'Organoid (PCC = {pcc_hk:.3f})', fontsize=10)
 
     if save_path:
         plt.savefig(save_path)
@@ -89,11 +93,26 @@ set_to_title = {
     'Train': 'training',
     'Val': 'validation'
 }
-true = f'data/deep-starr/Sequences_activity_{set_name}.txt'
 
 if __name__ == '__main__':
-    seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
+    # true = f'data/deep-starr/Sequences_activity_{set_name}.txt'
+    # seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
+    # for seed in seeds:
+    #     pred_filename = f'outputs/Pred_new_torch_{seed}_{set_name}.txt'
+    #     plot_filename = f'plots/05.05_new_torch/model_{seed}.png'
+    #     predicted_vs_observed(true, pred_filename, f'DeepSTARR PyTorch model predictions on the {set_to_title[set_name]} set', save_path=plot_filename)
+
+    true = f'data/lenti-mpra/da_library/preprocessed/Sequences_activity_{set_name}.txt'
+    seeds = [7898]#, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
     for seed in seeds:
-        pred_filename = f'outputs/Pred_new_torch_{seed}_{set_name}.txt'
-        plot_filename = f'plots/05.05_new_torch/model_{seed}.png'
-        predicted_vs_observed(true, pred_filename, f'DeepSTARR PyTorch model predictions on the {set_to_title[set_name]} set', plot_filename)
+        pred_filename = f'outputs/lenti-mpra/Pred_new_torch_{seed}_{set_name}.txt'
+        plot_filename = f'plots/1.06_lenti-mpra/model_{seed}.png'
+        predicted_vs_observed(true, pred_filename, f'DeepSTARR PyTorch model predictions on the PsychENCODE {set_to_title[set_name]} set', class_names=['primary', 'organoid'], save_path=plot_filename)
+
+    true = f'data/lenti-mpra/da_library/split_as_in_paper/Sequences_activity_{set_name}.txt'
+    seeds = [7898]#, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
+    for seed in seeds:
+        pred_filename = f'outputs/lenti-mpra/split_as_in_paper/Pred_new_torch_{seed}_{set_name}.txt'
+        plot_filename = f'plots/1.06_lenti-mpra/model_{seed}_split_from_paper.png'
+        predicted_vs_observed(true, pred_filename, f'DeepSTARR PyTorch model predictions on the PsychENCODE {set_to_title[set_name]} set', class_names=['primary', 'organoid'], save_path=plot_filename)
+
