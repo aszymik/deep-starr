@@ -13,12 +13,12 @@ def parse_args(argv):
     parser.add_argument('-m', '--model', required=True, help='Path to the trained PyTorch model')
     return parser.parse_args(argv)
 
-def predict(model, set_name, batch_size=128):
+def predict(model, set_name, batch_size=128, set_dir='data/deep-starr', activity_cols=['Dev_log2_enrichment', 'Hk_log2_enrichment']):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
     model.eval()
 
-    test_loader = prepare_input(set_name, batch_size, shuffle=False)
+    test_loader = prepare_input(set_name, batch_size, set_dir, activity_cols, shuffle=False)
     pred_dev_list, pred_hk_list = [], []
 
     with torch.no_grad():
@@ -36,32 +36,25 @@ def predict(model, set_name, batch_size=128):
 
 
 if __name__ == '__main__':
-    # args = parse_args(sys.argv[1:])
 
     print('Loading sequences...')
     set_name = 'Test'
     # sequences = load_fasta_sequences(args.seq)
-    sequences = load_fasta_sequences(f'data/Sequences_{set_name}.fa')
-
-    print('Loading model...')
-    # model = load_model(args.model, PARAMS)
-    # model = load_model('models/DeepSTARR.model', PARAMS)
-    # model = load_model('models/DeepSTARR_different_adam.model', PARAMS)
-    # model = load_keras_model('models/Model_DeepSTARR.h5')
-
-    # seeds = [1234, 2787, 123, 72, 4895, 2137, 18, 4253, 9731]
-    # seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
-    seeds = [7899, 7897, 7796, 7697, 4898, 4896, 1238]#, 1235, 1237, 7654, 9876]
+    sequences = load_fasta_sequences(f'data/lenti-mpra/da_library/preprocessed/Sequences_{set_name}.fa')
+    seeds = [7898] #, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
     
     for seed in seeds:
         print('Loading model...')
-        model = load_model(f'models/DeepSTARR_{seed}.model', PARAMS)
+        model = load_model(f'models/lenti-mpra/DeepSTARR_lenti-mpra_{seed}.model', PARAMS)
 
         print('Predicting...')
-        pred_dev, pred_hk = predict(model, set_name)  # ta funkcja do zmiany
-        out_prediction = pd.DataFrame({'Sequence': sequences, 'Predictions_dev': pred_dev, 'Predictions_hk': pred_hk})
+        set_dir = 'data/lenti-mpra/da_library/preprocessed'
+        activity_cols = ['Primary_log2_enrichment', 'Organoid_log2_enrichment']
+        pred_prim, pred_org = predict(model, set_name, set_dir=set_dir, activity_cols=activity_cols)
+
+        out_prediction = pd.DataFrame({'Sequence': sequences, 'Predictions_primary': pred_prim, 'Predictions_organoid': pred_org})
         
-        out_filename = f'outputs/Pred_new_torch_{seed}_{set_name}.txt'
+        out_filename = f'outputs/lenti-mpra/Pred_new_torch_{seed}_{set_name}.txt'
         out_prediction.to_csv(out_filename, sep='\t', index=False)
         print(f'\nPredictions saved to {out_filename}\n')
 

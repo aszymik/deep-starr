@@ -62,9 +62,27 @@ for _, row in merged.iterrows():
     seq, org_activity = fasta_dict[loc]
     prim_activity = row["activity_primary"]
 
-    # Write both into lists for consistent order
+    # Adjust sequence to 249 bp
+    desired_len = 249
+    current_len = len(seq)
+
+    if current_len > desired_len:
+        # Trim symmetrically
+        extra = current_len - desired_len
+        left_trim = extra // 2
+        right_trim = extra - left_trim
+        seq = seq[left_trim: current_len - right_trim]
+    elif current_len < desired_len:
+        # Pad with Ns symmetrically
+        missing = desired_len - current_len
+        left_pad = "N" * (missing // 2)
+        right_pad = "N" * (missing - (missing // 2))
+        seq = left_pad + seq + right_pad
+
+    # Write to buffer lists for consistent order
     fasta_buffers[split].append(f">{loc}\n{seq}")
     tsv_buffers[split].append(f"{loc}\t{prim_activity}\t{org_activity}")
+
 
 # Write to files with matching order
 for split in ["train", "val", "test"]:

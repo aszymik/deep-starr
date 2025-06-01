@@ -11,7 +11,8 @@ from models import *
 from utils import *
 
 def train(model, train_loader, val_loader, params, log_file='train_logs/training_log.csv', seed=1234):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
     model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=params['lr'], betas=(0.9, 0.999), eps=1e-7)
     criterion = nn.MSELoss()
@@ -26,7 +27,7 @@ def train(model, train_loader, val_loader, params, log_file='train_logs/training
     
     np.random.seed(seed)
     torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
+    # torch.cuda.manual_seed(seed)
 
     for epoch in range(params['epochs']):
         model.train()
@@ -127,7 +128,7 @@ def evaluate(pred_dev, pred_hk, Y_dev, Y_hk):
 
 if __name__ == '__main__':
     seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
-    set_dir = 'data/lenti-mpra/da_library/preprocessed',
+    set_dir = 'data/lenti-mpra/da_library/preprocessed'
     activity_cols = ['Primary_log2_enrichment', 'Organoid_log2_enrichment']
 
     train_loader = prepare_input(set_name='Train', 
