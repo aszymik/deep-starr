@@ -11,8 +11,7 @@ from models import *
 from utils import *
 
 def train(model, train_loader, val_loader, params, log_file='train_logs/training_log.csv', seed=1234):
-    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    device = torch.device('cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=params['lr'], betas=(0.9, 0.999), eps=1e-7)
     criterion = nn.MSELoss()
@@ -24,10 +23,10 @@ def train(model, train_loader, val_loader, params, log_file='train_logs/training
     with open(log_file, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['Epoch', 'Train Loss', 'Train MSE Dev', 'Train MSE Hk', 'Train PCC Dev', 'Train PCC Hk', 'Train SCC Dev', 'Train SCC Hk', 'Val Loss', 'Val MSE Dev', 'Val MSE Hk', 'Val PCC Dev', 'Val PCC Hk', 'Val SCC Dev', 'Val SCC Hk'])
-    
+        
     np.random.seed(seed)
     torch.manual_seed(seed)
-    # torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
 
     for epoch in range(params['epochs']):
         model.train()
@@ -98,8 +97,8 @@ def train(model, train_loader, val_loader, params, log_file='train_logs/training
         with open(log_file, mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([epoch+1, avg_train_loss, mse_dev_train, mse_hk_train, pcc_dev_train, pcc_hk_train, scc_dev_train, scc_hk_train,
-                             avg_val_loss, mse_dev_val, mse_hk_val, pcc_dev_val, pcc_hk_val, scc_dev_val, scc_hk_val])
-        
+                            avg_val_loss, mse_dev_val, mse_hk_val, pcc_dev_val, pcc_hk_val, scc_dev_val, scc_hk_val])
+            
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
             best_model_state = model.state_dict()
@@ -127,7 +126,8 @@ def evaluate(pred_dev, pred_hk, Y_dev, Y_hk):
 
 
 if __name__ == '__main__':
-    seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
+    # seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
+    seeds = [2137]
     # set_dir = 'data/lenti-mpra/da_library/preprocessed'
     set_dir = 'data/lenti-mpra/da_library/split_as_in_paper'
     activity_cols = ['Primary_log2_enrichment', 'Organoid_log2_enrichment']
