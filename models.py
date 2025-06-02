@@ -69,12 +69,12 @@ class DeepSTARRFlex(nn.Module):
         self.bn_layers = nn.ModuleList()
 
         in_channels = 4
-        current_length = params['input_length']  # e.g., 249
+        current_length = 249
 
         for i in range(params['n_conv_layer']):
             out_channels = params[f'num_filters{i+1}']
             kernel_size = params[f'kernel_size{i+1}']
-            padding = params['pad']
+            padding = 'same'
 
             self.conv_layers.append(
                 nn.Conv1d(in_channels, out_channels, kernel_size=kernel_size, padding=padding)
@@ -84,7 +84,7 @@ class DeepSTARRFlex(nn.Module):
             )
 
             in_channels = out_channels
-            current_length = current_length // 2  # due to MaxPool1d with kernel_size=2
+            current_length = current_length // 2  # maxpool with kernel size 2
 
         self.flattened_size = current_length * in_channels
 
