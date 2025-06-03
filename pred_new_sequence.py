@@ -41,7 +41,8 @@ if __name__ == '__main__':
     set_name = 'Test'
     # sequences = load_fasta_sequences(f'data/lenti-mpra/da_library/preprocessed/Sequences_{set_name}.fa')
     sequences = load_fasta_sequences(f'data/lenti-mpra/da_library/split_as_in_paper/Sequences_{set_name}.fa')
-    seeds = [7898] #, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
+    # seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
+    seeds = [7530]
     
     for seed in seeds:
         print('Loading model...')
