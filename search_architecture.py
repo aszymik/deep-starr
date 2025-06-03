@@ -6,13 +6,12 @@ from utils import *
 wandb.login()
 
 sweep_config = {
-    'method': 'bayes'
+    'method': 'bayes',
+    'metric': {
+        'name': 'valid_pcc_dev',
+        'goal': 'maximize'
     }
-
-sweep_config['metric'] = {
-    'name': 'loss',
-    'goal': 'minimize'   
-    }
+}
 
 parameters_dict = {
     'batch_size': {
