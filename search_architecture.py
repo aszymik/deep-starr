@@ -71,7 +71,7 @@ parameters_dict = {
     }
 
 sweep_config['parameters'] = parameters_dict
-sweep_id = wandb.sweep(sweep_config, project='DeepSTARR')
+sweep_id = wandb.sweep(sweep_config, project='DeepSTARRFlex')
 
 
 def wandb_train(seed=1234):
