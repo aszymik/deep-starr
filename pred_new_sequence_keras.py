@@ -6,7 +6,7 @@ from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping, History
 
 import keras
-from helper import IOHelper, SequenceHelper
+from helper import IOHelper, SequenceHelper  # downloaded from https://github.com/const-ae/Neural_Network_DNA_Demo
 
 # MODEL_ID = 'models/DeepSTARR.model'
 MODEL_ID = 'models/Model_DeepSTARR'
