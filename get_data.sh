@@ -1,4 +1,7 @@
 mkdir data
+cd data
+mkdir deep-starr
+cd deep-starr
 
 # FASTA files with DNA sequences of genomic regions from train/val/test sets
 wget https://data.starklab.org/almeida/DeepSTARR/Data/Sequences_Train.fa -O data/Sequences_Train.fa
