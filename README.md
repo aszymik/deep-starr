@@ -1,6 +1,6 @@
 # DeepSTARR – PyTorch Reimplementation and Extension
 
-This repository contains a **PyTorch reimplementation** of the **DeepSTARR** model originally described in:
+This repository contains a **PyTorch reimplementation** of the DeepSTARR model originally described in:
 
 > De Almeida, B. P., Reiter, F., Pagani, M., & Stark, A. (2022).
 > *DeepSTARR predicts enhancer activity from DNA sequence and enables the de novo design of synthetic enhancers.*
@@ -10,11 +10,11 @@ This repository contains a **PyTorch reimplementation** of the **DeepSTARR** mod
 
 ## Overview
 
-DeepSTARR is a convolutional neural network designed to predict **enhancer activity** from raw DNA sequence. This repository provides:
+DeepSTARR is a convolutional neural network designed to predict enhancer activity from raw DNA sequence. This repository provides:
 
-* A faithful **reimplementation of DeepSTARR in PyTorch**
-* A script for **comparing Keras and PyTorch model outputs** (`compare_keras_and_pytorch/compare_keras_to_pytorch.py`)
-* An **extended flexible version**, **DeepSTARRFlex**, where model architecture (e.g., number of convolutional or fully connected layers) can be specified via parameters
+* A faithful reimplementation of DeepSTARR in PyTorch
+* A script for comparing Keras and PyTorch model outputs (`compare_keras_and_pytorch/compare_keras_to_pytorch.py`)
+* An extended flexible version, **DeepSTARRFlex**, where model architecture (e.g., number of convolutional or fully connected layers) can be specified via parameters
 * Tools for training, prediction, contribution analysis, and visualization
 
 ---
@@ -98,8 +98,8 @@ python train_flex_model.py
 Example parameters you can adjust in `DeepSTARRFlex`:
 
 * Number of convolutional layers
-* Number of dense (FC) layers
-* Filter sizes and counts
+* Number of fully connected layers
+* Filter sizes and numbers
 * Dropout rate, padding, etc.
 
 ---
