@@ -16,24 +16,21 @@ MODEL_ID = 'models/Model_DeepSTARR'
 with open(MODEL_ID + '.json', 'r') as f:
     keras_model = model_from_json(f.read())
 
-# Freeze all layers before loading weights
+# Freeze all layers
 for layer in keras_model.layers:
     layer.trainable = False
 
-# Required to work
 keras_model.compile(optimizer='adam', loss='mse')
-
-# Load weights
 keras_model.load_weights(MODEL_ID + '.h5')
 
-# Initialize any uninitialized vars (important in TF1.x)
+# Initialize any uninitialized vars
 uninitialized_vars = [
     v for v in tf.compat.v1.global_variables()
     if not sess.run(tf.compat.v1.is_variable_initialized(v))
 ]
 sess.run(tf.compat.v1.variables_initializer(uninitialized_vars))
 
-# Create a dummy input
+# Create input
 batch_size = 1
 seq_len = 249
 channels = 4
@@ -42,7 +39,7 @@ np.random.seed(42)
 dummy_input = np.random.rand(batch_size, seq_len, channels).astype(np.float32)
 dummy_input = tf.convert_to_tensor(dummy_input, dtype=tf.float32)
 
-# Forward through Keras step-by-step
+# Forward through Keras
 keras_layers = [layer for layer in keras_model.layers]
 x_tf = dummy_input
 outputs_tf = {}
@@ -72,7 +69,7 @@ for layer in keras_model.layers:
 pt_weights = torch.load('compare_keras_and_pytorch/pytorch_weights.pth')
 pt_weights_dict = {name: weights for name, weights in pt_weights.items() if not 'num_batches_tracked' in name}
 
-"""
+
 print('\nWeights comparison:')
 for layer_pt, layer_keras in zip(pt_weights_dict, keras_weights_dict):
 
@@ -92,9 +89,7 @@ for layer_pt, layer_keras in zip(pt_weights_dict, keras_weights_dict):
     diff = np.mean(np.abs(pt_weights - keras_weights))
 
     print(f'\n{layer_pt} / {layer_keras}')
-    # print(f'PyTorch shape {pt_weights.shape} vs Keras shape {keras_weights.shape}')
     print(f'Mean absolute difference: {diff:.6e}')
-"""
 
 
 # Compare outputs
