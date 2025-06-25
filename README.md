@@ -128,7 +128,7 @@ To verify model translation consistency:
 python compare_keras_and_pytorch/compare_keras_to_pytorch.py
 ```
 
-This will compute correlation and output comparison plots between the two model types.
+This will compute output comparison plots between the two models.
 
 ---
 
