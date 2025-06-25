@@ -50,8 +50,7 @@ if __name__ == '__main__':
     print('Loading sequences...')
     set_name = 'Test'
     sequences = load_fasta_sequences(f'data/deep-starr/Sequences_{set_name}.fa')
-    # seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1234]
-    seeds = [7898]
+    seeds = [2211, 7530, 9982, 7653, 4949, 3008, 1234]
     
     for seed in seeds:
         print('Loading model...')

@@ -8,11 +8,11 @@ from keras.callbacks import EarlyStopping, History
 import keras
 from helper import IOHelper, SequenceHelper  # downloaded from https://github.com/const-ae/Neural_Network_DNA_Demo
 
-# MODEL_ID = 'models/DeepSTARR.model'
+
 MODEL_ID = 'models/Model_DeepSTARR'
 SET = 'Test'
 set_path = f'data/Sequences_{SET}.fa'
-out_path = f'outputs/Keras_predictions_{SET}_2.txt'
+out_path = f'outputs/Keras_predictions_{SET}.txt'
 
 # Load sequences
 print("\nLoading sequences...\n")
@@ -33,7 +33,6 @@ def load_model(model_path):
     keras_model_json = model_path + '.json'
     keras_model = model_from_json(open(keras_model_json).read())
     keras_model.load_weights(keras_model_weights)
-    #keras_model.summary()
     return keras_model, keras_model_weights, keras_model_json
 
 keras_model, keras_model_weights, keras_model_json = load_model(MODEL_ID)
