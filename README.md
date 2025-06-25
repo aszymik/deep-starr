@@ -1,4 +1,4 @@
-# DeepSTARR – PyTorch Reimplementation and Extension
+# DeepSTARR PyTorch Reimplementation
 
 This repository contains a **PyTorch reimplementation** of the DeepSTARR model originally described in:
 
