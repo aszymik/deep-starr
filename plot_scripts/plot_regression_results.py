@@ -95,32 +95,14 @@ set_to_title = {
 }
 
 if __name__ == '__main__':
-    # true = f'data/deep-starr/Sequences_activity_{set_name}.txt'
-    # seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
-    # for seed in seeds:
-    #     pred_filename = f'outputs/Pred_new_torch_{seed}_{set_name}.txt'
-    #     plot_filename = f'plots/05.05_new_torch/model_{seed}.png'
-    #     predicted_vs_observed(true, pred_filename, f'DeepSTARR PyTorch model predictions on the {set_to_title[set_name]} set', save_path=plot_filename)
-
-    # true = f'data/lenti-mpra/da_library/preprocessed/Sequences_activity_{set_name}.txt'
-    # seeds = [7898]#, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
-    # for seed in seeds:
-    #     pred_filename = f'outputs/lenti-mpra/Pred_new_torch_{seed}_{set_name}.txt'
-    #     plot_filename = f'plots/1.06_lenti-mpra/model_{seed}.png'
-    #     predicted_vs_observed(true, pred_filename, f'DeepSTARR PyTorch model predictions on the PsychENCODE data {set_to_title[set_name]} set', class_names=['primary', 'organoid'], save_path=plot_filename)
-
-    # true = f'data/lenti-mpra/da_library/split_as_in_paper/Sequences_activity_{set_name}.txt'
-    # # seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1105, 7]
-    # for seed in seeds:
-    #     pred_filename = f'outputs/lenti-mpra/split_as_in_paper/Pred_new_torch_{seed}_{set_name}.txt'
-    #     plot_filename = f'plots/1.06_lenti-mpra/model_{seed}_split_from_paper.png'
-    #     predicted_vs_observed(true, pred_filename, f'DeepSTARR PyTorch model predictions on the PsychENCODE {set_to_title[set_name]} set (chr 4)', class_names=['primary', 'organoid'], save_path=plot_filename)
-
+    # DeepSTARR
     true = f'data/deep-starr/Sequences_activity_{set_name}.txt'
-    seeds = [7898]
-    for seed in seeds:
-        pred_filename = f'outputs/deep-starr-flex/Pred_second_model_{seed}_{set_name}.txt'
-        plot_filename = f'plots/deep-starr-flex/model_{seed}.png'
-        predicted_vs_observed(true, pred_filename, f'Modified DeepSTARR model predictions on the {set_to_title[set_name]} set', save_path=plot_filename)
+    pred_filename = f'outputs/deep-starr/Predictions_{set_name}.txt'
+    plot_filename = f'plots/deep-starr/Predictions_{set_name}.png'
+    predicted_vs_observed(true, pred_filename, f'DeepSTARR PyTorch model predictions on the {set_to_title[set_name]} set', save_path=plot_filename)
 
+    # DeepSTARRFlex
+    pred_filename = f'outputs/deep-starr-flex/Predictions_{set_name}.txt'
+    plot_filename = f'plots/deep-starr-flex/Predictions_{set_name}.png'
+    predicted_vs_observed(true, pred_filename, f'Modified DeepSTARR model predictions on the {set_to_title[set_name]} set', save_path=plot_filename)
 

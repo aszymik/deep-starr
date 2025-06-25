@@ -49,7 +49,7 @@ if __name__ == '__main__':
     set_dir = 'data/deep-starr'
     pred_dev, pred_hk = predict(model, set_name, set_dir=set_dir)
 
-    out_prediction = pd.DataFrame({'Sequence': sequences, 'Predictions_developmental': pred_dev, 'Predictions_housekeeping': pred_hk})
+    out_prediction = pd.DataFrame({'Sequence': sequences, 'Predictions_dev': pred_dev, 'Predictions_hk': pred_hk})
     out_filename = f'outputs/deep-starr/Predictions_{set_name}.txt'
     out_prediction.to_csv(out_filename, sep='\t', index=False)
     print(f'\nPredictions saved to {out_filename}\n')
