@@ -4,7 +4,7 @@ This repository contains a **PyTorch reimplementation** of the **DeepSTARR** mod
 
 > De Almeida, B. P., Reiter, F., Pagani, M., & Stark, A. (2022).
 > *DeepSTARR predicts enhancer activity from DNA sequence and enables the de novo design of synthetic enhancers.*
-> **Nature Genetics, 54**(5), 613–624. [https://doi.org/10.1038/s41588-022-01023-5](https://doi.org/10.1038/s41588-022-01023-5)
+> **Nature Genetics, 54**(5), 613–624. [https://doi.org/10.1038/s41588-022-01023-5](https://doi.org/10.1038/s41588-022-01048-5)
 
 ---
 
@@ -147,7 +147,8 @@ If you use this codebase or find it helpful, please cite the original paper:
 
 > De Almeida, B. P., Reiter, F., Pagani, M., & Stark, A. (2022).
 > *DeepSTARR predicts enhancer activity from DNA sequence and enables the de novo design of synthetic enhancers.*
-> **Nature Genetics, 54**(5), 613–624. [https://doi.org/10.1038/s41588-022-01023-5](https://doi.org/10.1038/s41588-022-01023-5)
+> **Nature Genetics, 54**(5), 613–624. [https://doi.org/10.1038/s41588-022-01048-5](https://doi.org/10.1038/s41588-022-01048-5)
+> 
 
 ---
 
