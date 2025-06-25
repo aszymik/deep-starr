@@ -8,7 +8,7 @@ This repository contains a **PyTorch reimplementation** of the **DeepSTARR** mod
 
 ---
 
-## 🔍 Overview
+## Overview
 
 DeepSTARR is a convolutional neural network designed to predict **enhancer activity** from raw DNA sequence. This repository provides:
 
@@ -19,7 +19,7 @@ DeepSTARR is a convolutional neural network designed to predict **enhancer activ
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 deep-starr/
@@ -44,7 +44,7 @@ deep-starr/
 
 ---
 
-## ⚙️ Getting Started
+## Getting Started
 
 ### 1. Clone the repository
 
@@ -79,7 +79,7 @@ This will place preprocessed training/validation/test sets in `data/deep-starr/`
 
 ---
 
-## 🧠 Model Training
+## Model Training
 
 ### Train PyTorch DeepSTARR (original architecture)
 
@@ -104,7 +104,7 @@ Example parameters you can adjust in `DeepSTARRFlex`:
 
 ---
 
-## 🔍 Prediction
+## Prediction
 
 ### Predict on new sequences (PyTorch)
 
@@ -120,7 +120,7 @@ python pred_new_sequence_keras.py --fasta data/my_input.fa --model_path models/d
 
 ---
 
-## ⚖️ Compare Keras and PyTorch Predictions
+## Compare Keras and PyTorch Predictions
 
 To verify model translation consistency:
 
@@ -132,16 +132,7 @@ This will compute correlation and output comparison plots between the two model 
 
 ---
 
-## 📈 Results and Visualization
-
-* Training logs are saved in `train_logs/`
-* Model predictions go to `outputs/`
-* Final performance plots (e.g. R², scatter plots) are in `plots/`
-* Plotting utilities can be found in `plot_scripts/`
-
----
-
-## 📜 Citation
+## Citation
 
 If you use this codebase or find it helpful, please cite the original paper:
 
@@ -149,12 +140,5 @@ If you use this codebase or find it helpful, please cite the original paper:
 > *DeepSTARR predicts enhancer activity from DNA sequence and enables the de novo design of synthetic enhancers.*
 > **Nature Genetics, 54**(5), 613–624. [https://doi.org/10.1038/s41588-022-01048-5](https://doi.org/10.1038/s41588-022-01048-5)
 > 
-
----
-
-## 🙋 Acknowledgements
-
-This project is inspired by the original DeepSTARR implementation in Keras and TensorFlow.
-Thanks to the authors for making the model and data publicly available.
 
 ---
