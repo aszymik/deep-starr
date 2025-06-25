@@ -109,13 +109,13 @@ Example parameters you can adjust in `DeepSTARRFlex`:
 ### Predict on new sequences (PyTorch)
 
 ```bash
-python pred_new_sequence.py --fasta data/my_input.fa --model_path models/deep-starr/model.pth
+python pred_new_sequence.py
 ```
 
 ### Predict on new sequences (Keras)
 
 ```bash
-python pred_new_sequence_keras.py --fasta data/my_input.fa --model_path models/deep-starr/model.h5
+python pred_new_sequence_keras.py
 ```
 
 ---
