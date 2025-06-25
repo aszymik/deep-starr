@@ -1,6 +1,6 @@
 # DeepSTARR PyTorch Reimplementation
 
-This repository contains a **PyTorch reimplementation** of the DeepSTARR model originally described in:
+This repository contains a PyTorch reimplementation of the DeepSTARR model originally described in:
 
 > De Almeida, B. P., Reiter, F., Pagani, M., & Stark, A. (2022).
 > *DeepSTARR predicts enhancer activity from DNA sequence and enables the de novo design of synthetic enhancers.*
