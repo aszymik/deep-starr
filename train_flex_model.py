@@ -42,7 +42,6 @@ PARAMS = {
 
 if __name__ == '__main__':
     seeds = [7898, 2211, 7530, 9982, 7653, 4949, 3008, 1234]
-    # seeds = [1234]
     
     train_loader = prepare_input('Train', PARAMS['batch_size'])
     val_loader = prepare_input('Val', PARAMS['batch_size'])

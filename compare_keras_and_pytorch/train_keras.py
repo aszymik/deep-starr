@@ -44,7 +44,7 @@ params = {'batch_size': 128,
 def prepare_input(set):
     """Function to load sequences and enhancer activity"""
     # Convert sequences to one-hot encoding matrix
-    file_seq = str("data/Sequences_" + set + ".fa")
+    file_seq = str("data/deep-starr/Sequences_" + set + ".fa")
     input_fasta_data_A = IOHelper.get_fastas_from_file(file_seq, uppercase=True)
 
     # get length of first sequence
@@ -58,7 +58,7 @@ def prepare_input(set):
     X = np.nan_to_num(seq_matrix_A) # Replace NaN with zero and infinity with large finite numbers
     X_reshaped = X.reshape((X.shape[0], X.shape[1], X.shape[2]))
 
-    Activity = pd.read_table("data/Sequences_activity_" + set + ".txt")
+    Activity = pd.read_table("data/deep-starr/Sequences_activity_" + set + ".txt")
     Y_dev = Activity.Dev_log2_enrichment
     Y_hk = Activity.Hk_log2_enrichment
     Y = [Y_dev, Y_hk]
